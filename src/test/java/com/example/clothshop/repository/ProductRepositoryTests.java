@@ -51,13 +51,13 @@ public class ProductRepositoryTests {
     @Test
     public void givenProductObject_whenSave_thenReturnSavedObject() {
         Product savedProduct = productRepository.save(product);
+
         assertThat(savedProduct).isNotNull();
         assertThat(savedProduct.getId()).isGreaterThan(0);
     }
 
-    @Test//delete ?
+    @Test
     public void givenProductList_whenFindAll_thenProductList() {
-        //int productSize = 19; //number of items in the product table
         int productSize = (int) productRepository.count();
         List<Product> productList = productRepository.findAll();
 
@@ -67,7 +67,6 @@ public class ProductRepositoryTests {
 
     @Test
     public void givenProductObject_whenFindById_thenReturnProductObject() {
-
         Product savedProduct = productRepository.save(product);
 
         Product productDB = productRepository.findById(savedProduct.getId()).get();
@@ -77,7 +76,6 @@ public class ProductRepositoryTests {
 
     @Test
     public void givenProductName_whenFindByName_thenReturnProductObject() {
-
         Product savedProduct = productRepository.save(product);
 
         Product productDB = productRepository.findByName(product.getName()).get();

@@ -36,11 +36,17 @@ public class ProductServiceTests {
 
     @Mock
     private ProductRepository productRepository;
+    @Mock CategoryService categoryService;
+    @Mock VendorService vendorService;
+    @Mock ImageService imageService;
     @Mock
     private MapStructMapper mapStructMapper;
     @InjectMocks
     private ProductService productService;
     private Product product;
+    private Category category;
+    private Vendor vendor;
+    private Image image;
     private ProductDTO productDTO;
 
 
@@ -70,11 +76,22 @@ public class ProductServiceTests {
 
     @Test
     public void givenProductObject_whenSaveProduct_thenReturnProductObject() {
+        //ProductService productService1 = mock(ProductService.class);
+//        ProductDTO productDTO1 = mock(ProductDTO.class);
+//        category = new Category();
+//        vendor = new Vendor();
+//        image = new Image();
+
         given(productRepository.findByName(product.getName())).willReturn(Optional.empty());
         given(mapStructMapper.productDTOToProduct(productDTO)).willReturn(product);
         given(productRepository.save(product)).willReturn(product);
 
-        willDoNothing().given(productService).checkForExistenceCategoryVendorImage(ArgumentMatchers.any(ProductDTO.class));
+        //given(productDTO.getCategory()).willReturn(productDTO.getCategory());
+        //given(categoryService.getCategoryById(ArgumentMatchers.any(long.class))).willReturn(productDTO.getCategory());
+
+        //doNothing().when(categoryService).getCategoryById(ArgumentMatchers.any(long.class));
+        doNothing().when(productService).checkForExistenceCategoryVendorImage(ArgumentMatchers.any(ProductDTO.class));
+        //willDoNothing().given(productService).checkForExistenceCategoryVendorImage(ArgumentMatchers.any(ProductDTO.class));
 
 
         Product savedProduct = productService.saveNewProduct(productDTO);
