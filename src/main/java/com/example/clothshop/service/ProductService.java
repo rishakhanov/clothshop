@@ -22,17 +22,9 @@ import java.util.Optional;
 public class ProductService {
 
     private final ProductRepository productRepository;
-    private final CategoryService categoryService;
-    private final VendorService vendorService;
-    private final ImageService imageService;
     private MapStructMapper mapStructMapper;
-    public ProductService(ProductRepository productRepository, CategoryService categoryService,
-                          VendorService vendorService, ImageService imageService,
-                          MapStructMapper mapStructMapper) {
+    public ProductService(ProductRepository productRepository, MapStructMapper mapStructMapper) {
         this.productRepository = productRepository;
-        this.categoryService = categoryService;
-        this.vendorService = vendorService;
-        this.imageService = imageService;
         this.mapStructMapper = mapStructMapper;
     }
 
@@ -56,7 +48,6 @@ public class ProductService {
         if (foundProduct.isPresent()) {
             throw new ProductNotCreatedException("The product already exists.");
         } else {
-            checkForExistenceCategoryVendorImage(productDTO);
             Product product = mapStructMapper.productDTOToProduct(productDTO);
             return productRepository.save(product);
         }
@@ -92,12 +83,6 @@ public class ProductService {
 
             throw new ProductNotCreatedException(errorMsg.toString());
         }
-    }
-
-    public void checkForExistenceCategoryVendorImage(ProductDTO productDTO) {
-        categoryService.getCategoryById(productDTO.getCategory().getId());
-        vendorService.getVendorById(productDTO.getVendor().getId());
-        imageService.getImageById(productDTO.getImage().getId());
     }
 
     @Transactional

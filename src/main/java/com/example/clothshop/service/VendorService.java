@@ -64,7 +64,6 @@ public class VendorService {
     @Transactional
     public Vendor saveNewVendor(VendorDTO vendorDTO) {
         Optional<Vendor> foundVendor = vendorRepository.findByName(vendorDTO.getName());
-
         if (foundVendor.isPresent()) {
             throw new VendorNotCreatedException("The vendor already exists.");
         } else {
