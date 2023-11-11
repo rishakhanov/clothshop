@@ -75,6 +75,7 @@ public class ProductService {
             StringBuilder errorMsg = new StringBuilder();
 
             List<FieldError> errors = bindingResult.getFieldErrors();
+
             for (FieldError error : errors) {
                 errorMsg.append(error.getField())
                         .append(" - ").append(error.getDefaultMessage())

@@ -1,20 +1,24 @@
 package com.example.clothshop.dto;
 
 import com.example.clothshop.entity.Person;
+import com.example.clothshop.entity.OrdersStatus;
+import com.example.clothshop.entity.Product;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Builder;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Builder
 public class OrderDTO {
 
     private Long id;
     private Person person;
+    private List<Product> orderedProducts;
     private LocalDate createdAt;
     private LocalDate shipDate;
-    private String status;
-    private boolean complete;
+    //private String status;
+    private OrdersStatus status;
 
     public Long getId() {
         return id;
@@ -49,19 +53,21 @@ public class OrderDTO {
         this.shipDate = shipDate;
     }
 
-    public String getStatus() {
+    //public String getStatus() {
+    public OrdersStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    //public void setStatus(String status) {
+    public void setStatus(OrdersStatus status) {
         this.status = status;
     }
 
-    public boolean isComplete() {
-        return complete;
+    public List<Product> getOrderedProducts() {
+        return orderedProducts;
     }
 
-    public void setComplete(boolean complete) {
-        this.complete = complete;
+    public void setOrderedProducts(List<Product> orderedProducts) {
+        this.orderedProducts = orderedProducts;
     }
 }

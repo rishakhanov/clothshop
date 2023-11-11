@@ -1,6 +1,7 @@
 package com.example.clothshop.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Table(name = "orders")
 public class Orders {
 
@@ -24,12 +26,16 @@ public class Orders {
     @ManyToOne(fetch = FetchType.LAZY)
     private Person person;
 
-    @ManyToMany
-    @JoinTable(
-            name = "product_orders",
-            joinColumns = @JoinColumn(name = "order_id"),
-            inverseJoinColumns = @JoinColumn(name = "product_id"))
-    List<Product> orderedProducts;
+    @ToString.Exclude
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "orders",cascade = CascadeType.ALL)
+    private List<ProductOrders> productOrders;
+
+//    @ManyToMany
+//    @JoinTable(
+//            name = "product_orders",
+//            joinColumns = @JoinColumn(name = "orders_id"),
+//            inverseJoinColumns = @JoinColumn(name = "product_id"))
+//    private List<Product> orderedProducts;
 
     @Column(name = "created_at")
     private LocalDate createdAt;
@@ -38,10 +44,7 @@ public class Orders {
     private LocalDate shipDate;
 
     @Column(name = "status")
-    private String status;
-
-    @Column(name = "complete")
-    private boolean complete;
+    private OrdersStatus status;
 
     public Long getId() {
         return id;
@@ -60,15 +63,17 @@ public class Orders {
         return shipDate;
     }
 
-    public String getStatus() {
+    public OrdersStatus getStatus() {
         return status;
     }
 
-    public List<Product> getOrderedProducts() {
-        return orderedProducts;
+    @JsonManagedReference(value = "product-orders-orders")
+    public List<ProductOrders> getProductOrders() {
+        return productOrders;
     }
 
-    public boolean isComplete() {
-        return complete;
-    }
+    //    public List<Product> getOrderedProducts() {
+//        return orderedProducts;
+//    }
+
 }

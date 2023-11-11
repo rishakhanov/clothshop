@@ -1,12 +1,20 @@
 package com.example.clothshop.service;
 
+import com.example.clothshop.dto.MapStructMapper;
+import com.example.clothshop.dto.OrderDTO;
 import com.example.clothshop.entity.Orders;
+import com.example.clothshop.entity.OrdersStatus;
 import com.example.clothshop.entity.Product;
+import com.example.clothshop.entity.ProductOrders;
 import com.example.clothshop.repository.OrderRepository;
+import com.example.clothshop.repository.ProductOrdersRepository;
+import com.example.clothshop.util.OrderNotCreatedException;
 import com.example.clothshop.util.OrderNotFoundException;
 import com.example.clothshop.util.ProductNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,10 +25,17 @@ import java.util.Optional;
 public class OrderService {
 
     private final OrderRepository orderRepository;
+    private final PersonService personService;
+    private final MapStructMapper mapStructMapper;
+    private final ProductOrdersRepository productOrdersRepository;
 
 
-    public OrderService(OrderRepository orderRepository) {
+    public OrderService(OrderRepository orderRepository, PersonService personService,
+                        MapStructMapper mapStructMapper, ProductOrdersRepository productOrdersRepository) {
         this.orderRepository = orderRepository;
+        this.personService = personService;
+        this.mapStructMapper = mapStructMapper;
+        this.productOrdersRepository = productOrdersRepository;
     }
 
     public List<Orders> getOrders() {
@@ -35,13 +50,17 @@ public class OrderService {
 
     public List<Product> getOrderProducts(long id) {
         Orders order = getOrderById(id);
-        return order.getOrderedProducts();
-//        Optional<Orders> foundOrder = orderRepository.findById(id);
-//        if (foundOrder.isPresent()) {
-//            return foundOrder.get().getOrderedProducts();
-//        } else {
-//            throw new OrderNotFoundException();
-//        }
+        List<Product> products = new ArrayList<>();
+        Product product;
+        List<ProductOrders> productOrders = order.getProductOrders();
+        for (ProductOrders item : productOrders) {
+            product = item.getProduct();
+            product.setQuantity(item.getQuantity());
+            products.add(product);
+        }
+        return products;
+        //return productOrders.stream().map(ProductOrders::getProduct).toList();
+        //return productOrdersService.getProductsByOrderId(id);
     }
 
     public Product getOrderItem(long oid, long iid) {
@@ -55,16 +74,33 @@ public class OrderService {
     }
 
     @Transactional
-    public void addProductToOrder(long orderId, Product product) {
+    public Product addProductToOrder(long orderId, Product product, long quantity) {
         Orders order = getOrderById(orderId);
-        order.getOrderedProducts().add(product);
+        List<ProductOrders> productOrders = order.getProductOrders();
+        for (ProductOrders item : productOrders) {
+            if (item.getProduct().getId().equals(product.getId())) {
+                item.setQuantity(quantity);
+                order.setProductOrders(productOrders);
+                orderRepository.save(order);
+                return product;
+            }
+        }
+
+        ProductOrders productOrdersNew = new ProductOrders();
+        productOrdersNew.setOrders(order);
+        productOrdersNew.setProduct(product);
+        productOrdersNew.setQuantity(quantity);
+        productOrders.add(productOrdersNew);
+        order.setProductOrders(productOrders);
         orderRepository.save(order);
+        return product;
+        //return productOrdersService.addProductToOrder(order, product, quantity);
     }
 
     @Transactional
     public boolean deleteOrder(long id) {
         Orders order = getOrderById(id);
-        if (order.getStatus().equals("paid")) {
+        if (order.getStatus().getCode().matches("P|CD|CE")) {
             return false;
         } else {
             orderRepository.delete(order);
@@ -75,14 +111,20 @@ public class OrderService {
     @Transactional
     public void deleteProductOfOrder(long orderId, long productId) {
         Orders order = getOrderById(orderId);
-        List<Product> updatedProductsList = new ArrayList<>();
+        List<ProductOrders> productOrders = order.getProductOrders();
+
+        //productOrdersService.deleteProductOfOrder(order, productId);
+
+        List<ProductOrders> updatedProductsList = new ArrayList<>();
         boolean productNotFound = true;
 
-        for (Product product : order.getOrderedProducts()) {
-            if (product.getId().equals(productId)) {
+        for (ProductOrders item : productOrders) {
+            if (item.getProduct().getId().equals(productId)) {
+                productOrdersRepository.delete(item);
                 productNotFound = false;
+                break;
             } else {
-                updatedProductsList.add(product);
+                updatedProductsList.add(item);
             }
         }
 
@@ -90,7 +132,58 @@ public class OrderService {
             throw new ProductNotFoundException();
         }
 
-        order.setOrderedProducts(updatedProductsList);
+//        System.out.println("updatedProductsList:");
+//        for (ProductOrders item : updatedProductsList) {
+//            System.out.println(item.getProduct().getId());
+//        }
+
+        order.setProductOrders(updatedProductsList);
         orderRepository.save(order);
+//
+//        Orders order2 = getOrderById(orderId);
+//        System.out.println("productOrders2:");
+//        List<ProductOrders> productOrders2 = order2.getProductOrders();
+//        for (ProductOrders item : productOrders2) {
+//            System.out.println(item.getProduct().getId());
+//        }
     }
+
+    public List<Orders> getOrdersOfUser(long userId) {
+        personService.getPersonById(userId);
+        List<Orders> orders = orderRepository.findAllByPersonId(userId);
+        return orders;
+    }
+
+    public void checkForValidationErrors(BindingResult bindingResult) {
+        if (bindingResult.hasErrors()) {
+            StringBuilder errorMsg = new StringBuilder();
+
+            List<FieldError> errors = bindingResult.getFieldErrors();
+
+            for (FieldError error : errors) {
+                errorMsg.append(error.getField())
+                        .append(" - ").append(error.getDefaultMessage())
+                        .append(";");
+            }
+
+            throw new OrderNotCreatedException(errorMsg.toString());
+        }
+    }
+
+    @Transactional
+    public Orders saveNewOrder(OrderDTO orderDTO, long userId) {
+        personService.getPersonById(userId);
+        Orders order = mapStructMapper.orderDTOToOrder(orderDTO);
+        order.setShipDate(null);
+        order.setStatus(OrdersStatus.NEW);
+        return orderRepository.save(order);
+    }
+
+
+
+    //        if (quantity > product.getQuantity()) {
+//            throw new OrderNotCreatedException("Order cannot be created. " + product.getName()
+//                    + " order quantity (" + quantity + ") exceeds the available stock level ("
+//                    + product.getQuantity() + ")");
+//        }
 }

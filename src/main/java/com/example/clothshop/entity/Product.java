@@ -38,8 +38,12 @@ public class Product {
     @ManyToOne(fetch = FetchType.LAZY)
     private Image image;
 
-    @ManyToMany(mappedBy = "orderedProducts")
-    List<Orders> products;
+    @ToString.Exclude
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "product", cascade = CascadeType.ALL)
+    private List<ProductOrders> productOrders;
+
+//    @ManyToMany(mappedBy = "orderedProducts")
+//    List<Orders> products;
 
     @Column(name = "name")
     @NotEmpty(message = "Name should not be empty")
@@ -85,7 +89,12 @@ public class Product {
         return quantity;
     }
 
-    public List<Orders> getProducts() {
-        return products;
+    @JsonManagedReference(value = "product-orders-product")
+    public List<ProductOrders> getProductOrders() {
+        return productOrders;
     }
+
+    //    public List<Orders> getProducts() {
+//        return products;
+//    }
 }

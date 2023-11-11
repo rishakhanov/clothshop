@@ -1,9 +1,6 @@
 package com.example.clothshop.dto;
 
-import com.example.clothshop.entity.Category;
-import com.example.clothshop.entity.Orders;
-import com.example.clothshop.entity.Product;
-import com.example.clothshop.entity.Vendor;
+import com.example.clothshop.entity.*;
 import org.mapstruct.Mapper;
 
 @Mapper(
@@ -21,5 +18,7 @@ public interface MapStructMapper {
 
     OrderDTO orderToOrderDTO(Orders order);
     Orders orderDTOToOrder(OrderDTO orderDTO);
+
+    OrderProductDTO productToOrderProductDTO(Product product);
 
 }

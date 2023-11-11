@@ -3,14 +3,12 @@ package com.example.clothshop.controller;
 import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.dto.OrderDTO;
 import com.example.clothshop.dto.ProductDTO;
+import com.example.clothshop.dto.OrderProductDTO;
 import com.example.clothshop.entity.Orders;
 import com.example.clothshop.entity.Product;
 import com.example.clothshop.service.OrderService;
 import com.example.clothshop.service.ProductService;
-import com.example.clothshop.util.OrderErrorResponse;
-import com.example.clothshop.util.OrderNotFoundException;
-import com.example.clothshop.util.ProductErrorResponse;
-import com.example.clothshop.util.ProductNotFoundException;
+import com.example.clothshop.util.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -42,9 +40,9 @@ public class OrderController {
     }
 
     @GetMapping("/{id}/items")
-    public List<ProductDTO> getOrderItems(@PathVariable("id") long id) {
+    public List<OrderProductDTO> getOrderItems(@PathVariable("id") long id) {
         List<Product> products = orderService.getOrderProducts(id);
-        return products.stream().map(mapStructMapper::productToProductDTO).collect(Collectors.toList());
+        return products.stream().map(mapStructMapper::productToOrderProductDTO).collect(Collectors.toList());
     }
 
     @GetMapping("/{oid}/items/{iid}")
@@ -54,12 +52,17 @@ public class OrderController {
     }
 
     @PostMapping("/{id}/items")
-    public ProductDTO addItemToOrder(@PathVariable("id") long id, @RequestBody @Valid ProductDTO productDTO,
-                                     BindingResult bindingResult) {
-        Product product = productService.getProductByName(productDTO.getName());
+    public OrderProductDTO addItemToOrder(@PathVariable("id") long id,
+                                          @RequestBody @Valid OrderProductDTO orderProductDTO,
+                                          BindingResult bindingResult) {
+        Product product = productService.getProductByName(orderProductDTO.getName());
         productService.checkForValidationErrors(bindingResult);
-        orderService.addProductToOrder(id, product);
-        return mapStructMapper.productToProductDTO(product);
+        orderService.addProductToOrder(id, product, orderProductDTO.getQuantity());
+
+        orderProductDTO.setPrice(product.getPrice());
+        return orderProductDTO;
+//        return mapStructMapper.productToProductDTO(
+//                orderService.addProductToOrder(id, product, productDTO.getQuantity()));
     }
 
     @DeleteMapping("/{id}")
@@ -67,7 +70,7 @@ public class OrderController {
         if (orderService.deleteOrder(id)) {
             return "Order with ID = " + id + " was deleted.";
         } else {
-            return "Order with ID = " + id + " was paid and cannot be deleted.";
+            return "Order with ID = " + id + " was paid, canceled or complete and cannot be deleted.";
         }
     }
 
@@ -75,6 +78,19 @@ public class OrderController {
     public String deleteItemOfOrder(@PathVariable("oid") long oid, @PathVariable("iid") long iid) {
         orderService.deleteProductOfOrder(oid, iid);
         return "Product with ID = " + iid + " was deleted from order with ID = " + oid;
+    }
+
+    @GetMapping("/users/{id}")
+    public List<OrderDTO> getOrdersOfPerson(@PathVariable("id") long id) {
+        List<Orders> ordersList = orderService.getOrdersOfUser(id);
+        return ordersList.stream().map(mapStructMapper::orderToOrderDTO).collect(Collectors.toList());
+    }
+
+    @PostMapping("/users/{id}")
+    public OrderDTO createOrderForPerson(@PathVariable("id") long id, @RequestBody @Valid OrderDTO orderDTO,
+                                         BindingResult bindingResult) {
+        orderService.checkForValidationErrors(bindingResult);
+        return mapStructMapper.orderToOrderDTO(orderService.saveNewOrder(orderDTO, id));
     }
 
     private OrderDTO convertToOrderDTO(Orders order) {
@@ -87,9 +103,21 @@ public class OrderController {
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler
+    private ResponseEntity<OrderErrorResponse> handleOrderNotCreatedException(OrderNotCreatedException exception) {
+        OrderErrorResponse response = new OrderErrorResponse(exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
    @ExceptionHandler
     private ResponseEntity<ProductErrorResponse> handleProductNotFoundException(ProductNotFoundException exception) {
         ProductErrorResponse productErrorResponse = new ProductErrorResponse("Product with this id wasn't found!");
         return new ResponseEntity<>(productErrorResponse, HttpStatus.NOT_FOUND);
    }
+
+    @ExceptionHandler
+    private ResponseEntity<PersonErrorResponse> handlePersonNotFoundException(PersonNotFoundException exception) {
+        PersonErrorResponse response = new PersonErrorResponse("Person with this id wasn't found!");
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
 }
