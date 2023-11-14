@@ -6,8 +6,9 @@ import jakarta.validation.constraints.Size;
 
 public class OrderProductDTO {
 
-    @NotEmpty(message = "Name should not be empty")
-    @Size(min = 2, max = 100, message = "Name should be between 2 and 100 characters")
+    @Min(value = 1, message = "Id should be greater than or equal to 1")
+    private Long id;
+
     private String name;
 
     private double price;
@@ -37,5 +38,13 @@ public class OrderProductDTO {
 
     public void setQuantity(long quantity) {
         this.quantity = quantity;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }

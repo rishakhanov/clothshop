@@ -94,4 +94,9 @@ public class ProductService {
         return product;
     }
 
+    @Transactional
+    public Product saveProduct(Product product) {
+        return productRepository.save(product);
+    }
+
 }

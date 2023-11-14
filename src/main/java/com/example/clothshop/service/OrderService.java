@@ -10,12 +10,14 @@ import com.example.clothshop.repository.OrderRepository;
 import com.example.clothshop.repository.ProductOrdersRepository;
 import com.example.clothshop.util.OrderNotCreatedException;
 import com.example.clothshop.util.OrderNotFoundException;
+import com.example.clothshop.util.OrderNotFulfilledException;
 import com.example.clothshop.util.ProductNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -28,14 +30,16 @@ public class OrderService {
     private final PersonService personService;
     private final MapStructMapper mapStructMapper;
     private final ProductOrdersRepository productOrdersRepository;
+    private final ProductService productService;
 
 
     public OrderService(OrderRepository orderRepository, PersonService personService,
-                        MapStructMapper mapStructMapper, ProductOrdersRepository productOrdersRepository) {
+                        MapStructMapper mapStructMapper, ProductOrdersRepository productOrdersRepository, ProductService productService) {
         this.orderRepository = orderRepository;
         this.personService = personService;
         this.mapStructMapper = mapStructMapper;
         this.productOrdersRepository = productOrdersRepository;
+        this.productService = productService;
     }
 
     public List<Orders> getOrders() {
@@ -132,20 +136,9 @@ public class OrderService {
             throw new ProductNotFoundException();
         }
 
-//        System.out.println("updatedProductsList:");
-//        for (ProductOrders item : updatedProductsList) {
-//            System.out.println(item.getProduct().getId());
-//        }
-
         order.setProductOrders(updatedProductsList);
         orderRepository.save(order);
-//
-//        Orders order2 = getOrderById(orderId);
-//        System.out.println("productOrders2:");
-//        List<ProductOrders> productOrders2 = order2.getProductOrders();
-//        for (ProductOrders item : productOrders2) {
-//            System.out.println(item.getProduct().getId());
-//        }
+
     }
 
     public List<Orders> getOrdersOfUser(long userId) {
@@ -179,7 +172,70 @@ public class OrderService {
         return orderRepository.save(order);
     }
 
+    @Transactional
+    public Orders purchaseOrder(long orderId) {
+        Orders order = getOrderById(orderId);
 
+        if (!order.getStatus().equals(OrdersStatus.NEW)) {
+            throw new OrderNotFulfilledException("Order could not be fulfilled: order status is not NEW");
+        }
+
+        List<ProductOrders> productOrders = order.getProductOrders();
+        checkOrderQuantities(productOrders);
+        Product product;
+        for (ProductOrders productOrder : productOrders) {
+            product = productService.getProductById(productOrder.getProduct().getId());
+            product.setQuantity(product.getQuantity() - productOrder.getQuantity());
+            productService.saveProduct(product);
+        }
+        order.setStatus(OrdersStatus.PAID);
+        return orderRepository.save(order);
+    }
+
+    private void checkOrderQuantities(List<ProductOrders> productOrders) {
+        Product product;
+        for (ProductOrders productOrder : productOrders) {
+            product = productService.getProductById(productOrder.getProduct().getId());
+            if (product.getQuantity() < productOrder.getQuantity()) {
+                throw new OrderNotFulfilledException("Order could not be fulfilled: requested order quantity "
+                        + "of product " + product.getName() + " exceed available amount.");
+            }
+        }
+    }
+
+    @Transactional
+    public Orders cancelOrder(long orderId) {
+        Orders order = getOrderById(orderId);
+
+        if (!order.getStatus().equals(OrdersStatus.PAID)) {
+            throw new OrderNotFulfilledException("Order could not be fulfilled: order status is not PAID");
+        }
+
+        List<ProductOrders> productOrders = order.getProductOrders();
+        Product product;
+
+        for (ProductOrders productOrder : productOrders) {
+            product = productService.getProductById(productOrder.getProduct().getId());
+            product.setQuantity(product.getQuantity() + productOrder.getQuantity());
+            productService.saveProduct(product);
+        }
+
+        order.setStatus(OrdersStatus.CANCELED);
+        return orderRepository.save(order);
+    }
+
+    @Transactional
+    public Orders shipOrder(long orderId) {
+        Orders order = getOrderById(orderId);
+
+        if (!order.getStatus().equals(OrdersStatus.PAID)) {
+            throw new OrderNotFulfilledException("Order could not be fulfilled: order status is not PAID");
+        }
+
+        order.setShipDate(LocalDate.now());
+        order.setStatus(OrdersStatus.COMPLETE);
+        return orderRepository.save(order);
+    }
 
     //        if (quantity > product.getQuantity()) {
 //            throw new OrderNotCreatedException("Order cannot be created. " + product.getName()

@@ -55,11 +55,12 @@ public class OrderController {
     public OrderProductDTO addItemToOrder(@PathVariable("id") long id,
                                           @RequestBody @Valid OrderProductDTO orderProductDTO,
                                           BindingResult bindingResult) {
-        Product product = productService.getProductByName(orderProductDTO.getName());
+        Product product = productService.getProductById(orderProductDTO.getId());
         productService.checkForValidationErrors(bindingResult);
         orderService.addProductToOrder(id, product, orderProductDTO.getQuantity());
 
         orderProductDTO.setPrice(product.getPrice());
+        orderProductDTO.setName(product.getName());
         return orderProductDTO;
 //        return mapStructMapper.productToProductDTO(
 //                orderService.addProductToOrder(id, product, productDTO.getQuantity()));
@@ -93,6 +94,21 @@ public class OrderController {
         return mapStructMapper.orderToOrderDTO(orderService.saveNewOrder(orderDTO, id));
     }
 
+    @PostMapping("/{id}/purchase")
+    public OrderDTO purchaseOrder(@PathVariable("id") long id) {
+        return mapStructMapper.orderToOrderDTO(orderService.purchaseOrder(id));
+    }
+
+    @PostMapping("/{id}/cancel")
+    public OrderDTO cancelOrder(@PathVariable("id") long id) {
+        return mapStructMapper.orderToOrderDTO(orderService.cancelOrder(id));
+    }
+
+    @PostMapping("/{id}/ship")
+    public OrderDTO shipOrder(@PathVariable("id") long id) {
+        return mapStructMapper.orderToOrderDTO(orderService.shipOrder(id));
+    }
+
     private OrderDTO convertToOrderDTO(Orders order) {
         return mapStructMapper.orderToOrderDTO(order);
     }
@@ -105,6 +121,12 @@ public class OrderController {
 
     @ExceptionHandler
     private ResponseEntity<OrderErrorResponse> handleOrderNotCreatedException(OrderNotCreatedException exception) {
+        OrderErrorResponse response = new OrderErrorResponse(exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<OrderErrorResponse> handleOrderNotFulfilledException(OrderNotFulfilledException exception) {
         OrderErrorResponse response = new OrderErrorResponse(exception.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }

@@ -3,6 +3,7 @@ package com.example.clothshop.dto;
 import com.example.clothshop.entity.Person;
 import com.example.clothshop.entity.OrdersStatus;
 import com.example.clothshop.entity.Product;
+import com.example.clothshop.entity.ProductOrders;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Builder;
 
@@ -14,7 +15,7 @@ public class OrderDTO {
 
     private Long id;
     private Person person;
-    private List<Product> orderedProducts;
+    private List<ProductOrders> productOrders;
     private LocalDate createdAt;
     private LocalDate shipDate;
     //private String status;
@@ -63,11 +64,11 @@ public class OrderDTO {
         this.status = status;
     }
 
-    public List<Product> getOrderedProducts() {
-        return orderedProducts;
+    public List<ProductOrders> getProductOrders() {
+        return productOrders;
     }
 
-    public void setOrderedProducts(List<Product> orderedProducts) {
-        this.orderedProducts = orderedProducts;
+    public void setProductOrders(List<ProductOrders> productOrders) {
+        this.productOrders = productOrders;
     }
 }
