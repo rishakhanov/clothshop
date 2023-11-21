@@ -1,5 +1,6 @@
 package com.example.clothshop.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,6 +24,15 @@ public class Person {
     @ToString.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "person")
     private List<Orders> orders;
+
+    @ToString.Exclude
+    @ManyToMany
+    @JoinTable(
+            name = "person_roles",
+            joinColumns = @JoinColumn(name = "person_id"),
+            inverseJoinColumns = @JoinColumn(name = "roles_id")
+    )
+    private List<Roles> rolesList;
 
     @Column(name = "username")
     private String username;
@@ -73,5 +83,10 @@ public class Person {
 
     public String getPhone() {
         return phone;
+    }
+
+    //@JsonManagedReference(value = "person-roles")
+    public List<Roles> getRolesList() {
+        return rolesList;
     }
 }

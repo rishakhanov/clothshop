@@ -21,4 +21,6 @@ public interface MapStructMapper {
 
     OrderProductDTO productToOrderProductDTO(Product product);
 
+    PersonDTO personToPersonDTO(Person person);
+
 }
