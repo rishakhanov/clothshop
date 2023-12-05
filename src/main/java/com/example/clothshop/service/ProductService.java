@@ -2,13 +2,11 @@ package com.example.clothshop.service;
 
 import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.dto.ProductDTO;
-import com.example.clothshop.entity.Category;
 import com.example.clothshop.entity.Image;
 import com.example.clothshop.entity.Product;
-import com.example.clothshop.entity.Vendor;
 import com.example.clothshop.repository.ProductRepository;
-import com.example.clothshop.util.ProductNotCreatedException;
-import com.example.clothshop.util.ProductNotFoundException;
+import com.example.clothshop.util.exception.ProductNotCreatedException;
+import com.example.clothshop.util.exception.ProductNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;

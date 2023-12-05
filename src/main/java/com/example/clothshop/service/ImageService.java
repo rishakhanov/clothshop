@@ -2,15 +2,13 @@ package com.example.clothshop.service;
 
 import com.example.clothshop.entity.Image;
 import com.example.clothshop.repository.ImageRepository;
-import com.example.clothshop.util.ImageNotFoundException;
+import com.example.clothshop.util.exception.ImageNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Optional;
-
-import static org.hibernate.boot.model.process.spi.MetadataBuildingProcess.build;
 
 @Service
 @Slf4j

@@ -1,4 +1,4 @@
-package com.example.clothshop.util;
+package com.example.clothshop.util.exception;
 
 import lombok.Builder;
 import lombok.Data;

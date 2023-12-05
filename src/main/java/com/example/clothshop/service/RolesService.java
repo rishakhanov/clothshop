@@ -1,0 +1,25 @@
+package com.example.clothshop.service;
+
+import com.example.clothshop.entity.Roles;
+import com.example.clothshop.repository.RolesRepository;
+import com.example.clothshop.util.exception.RoleNotFoundException;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
+
+@Service
+@Transactional(readOnly = true)
+public class RolesService {
+
+    private final RolesRepository rolesRepository;
+
+    public RolesService(RolesRepository rolesRepository) {
+        this.rolesRepository = rolesRepository;
+    }
+
+    public Roles findByName(String roleName) {
+        Optional<Roles> role = rolesRepository.findByName(roleName);
+        return role.orElseThrow(RoleNotFoundException::new);
+    }
+}

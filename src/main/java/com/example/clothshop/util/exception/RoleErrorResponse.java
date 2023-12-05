@@ -1,10 +1,10 @@
-package com.example.clothshop.util;
+package com.example.clothshop.util.exception;
 
-public class OrderErrorResponse {
+public class RoleErrorResponse {
 
     private String message;
 
-    public OrderErrorResponse(String message) {
+    public RoleErrorResponse(String message) {
         this.message = message;
     }
 

@@ -21,10 +21,6 @@ public class ClothshopApplication implements ApplicationRunner {
         SpringApplication.run(ClothshopApplication.class, args);
     }
 
-    @Bean
-    PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
-    }
 
     @Override
     public void run(ApplicationArguments args) throws Exception {

@@ -1,10 +1,10 @@
-package com.example.clothshop.util;
+package com.example.clothshop.util.exception;
 
-public class CategoryErrorResponse {
+public class VendorErrorResponse {
 
     private String message;
 
-    public CategoryErrorResponse(String message) {
+    public VendorErrorResponse(String message) {
         this.message = message;
     }
 

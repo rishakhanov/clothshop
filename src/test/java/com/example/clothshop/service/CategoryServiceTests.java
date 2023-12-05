@@ -4,7 +4,7 @@ import com.example.clothshop.dto.CategoryDTO;
 import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.entity.Category;
 import com.example.clothshop.repository.CategoryRepository;
-import com.example.clothshop.util.CategoryNotCreatedException;
+import com.example.clothshop.util.exception.CategoryNotCreatedException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

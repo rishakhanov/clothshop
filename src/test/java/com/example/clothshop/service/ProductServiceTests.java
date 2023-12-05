@@ -2,15 +2,9 @@ package com.example.clothshop.service;
 
 import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.dto.ProductDTO;
-import com.example.clothshop.entity.Category;
-import com.example.clothshop.entity.Image;
 import com.example.clothshop.entity.Product;
-import com.example.clothshop.entity.Vendor;
-import com.example.clothshop.repository.CategoryRepository;
-import com.example.clothshop.repository.ImageRepository;
 import com.example.clothshop.repository.ProductRepository;
-import com.example.clothshop.repository.VendorRepository;
-import com.example.clothshop.util.ProductNotCreatedException;
+import com.example.clothshop.util.exception.ProductNotCreatedException;
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -22,10 +16,8 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.*;
 
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.List;

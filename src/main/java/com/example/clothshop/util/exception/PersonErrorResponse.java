@@ -1,10 +1,10 @@
-package com.example.clothshop.util;
+package com.example.clothshop.util.exception;
 
-public class ImageErrorResponse {
+public class PersonErrorResponse {
 
     private String message;
 
-    public ImageErrorResponse(String message) {
+    public PersonErrorResponse(String message) {
         this.message = message;
     }
 

@@ -1,10 +1,9 @@
-package com.example.clothshop.util;
+package com.example.clothshop.util.exception;
 
-public class PersonErrorResponse {
-
+public class ProductErrorResponse {
     private String message;
 
-    public PersonErrorResponse(String message) {
+    public ProductErrorResponse(String message) {
         this.message = message;
     }
 

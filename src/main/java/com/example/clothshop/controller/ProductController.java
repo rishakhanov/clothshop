@@ -6,7 +6,7 @@ import com.example.clothshop.entity.Image;
 import com.example.clothshop.entity.Product;
 import com.example.clothshop.service.ImageService;
 import com.example.clothshop.service.ProductService;
-import com.example.clothshop.util.*;
+import com.example.clothshop.util.exception.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
