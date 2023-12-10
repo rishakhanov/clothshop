@@ -23,7 +23,13 @@ public interface MapStructMapper {
 
     PersonDTO personToPersonDTO(Person person);
 
+    Person PersonDTOToPerson(PersonDTO personDTO);
+
     Person signupRequestDTOToPerson(SignupRequestDTO signupRequestDTO);
 
     SignupRequestDTO personToSignupRequestDTO(Person person);
+
+    Person personUpdateDTOToPerson(PersonUpdateDTO personUpdateDTO);
+
+    PersonOrdersDTO orderToPersonOrdersDTO(Orders order);
 }

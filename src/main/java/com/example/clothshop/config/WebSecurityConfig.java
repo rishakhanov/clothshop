@@ -58,8 +58,9 @@ public class WebSecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth.requestMatchers("/api/users/**").permitAll()
                                 .requestMatchers("/api/test/**").permitAll()
+                                .requestMatchers("/api/orders/**").permitAll()
+                                .requestMatchers("/api/auth/**").permitAll()
                                 .anyRequest().authenticated()
-
                 );
         //http.logout(logout -> logout.logoutSuccessUrl("/api/users/logout"));
         http.authenticationProvider(authenticationProvider());

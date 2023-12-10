@@ -1,11 +1,13 @@
 package com.example.clothshop.service;
 
+import com.example.clothshop.dto.MapStructMapper;
+import com.example.clothshop.dto.PersonUpdateDTO;
+import com.example.clothshop.entity.Orders;
 import com.example.clothshop.entity.Person;
 import com.example.clothshop.repository.PersonRepository;
-import com.example.clothshop.repository.RolesRepository;
 import com.example.clothshop.util.exception.PersonNotCreatedException;
 import com.example.clothshop.util.exception.PersonNotFoundException;
-import com.example.clothshop.util.exception.ProductNotCreatedException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
@@ -19,10 +21,15 @@ import java.util.Optional;
 public class PersonService {
 
     private final PersonRepository personRepository;
+    private final MapStructMapper mapStructMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final OrderService orderService;
 
-
-    public PersonService(PersonRepository personRepository) {
+    public PersonService(PersonRepository personRepository, MapStructMapper mapStructMapper, PasswordEncoder passwordEncoder, OrderService orderService) {
         this.personRepository = personRepository;
+        this.mapStructMapper = mapStructMapper;
+        this.passwordEncoder = passwordEncoder;
+        this.orderService = orderService;
     }
 
     public Person getPersonById(long id) {
@@ -68,8 +75,36 @@ public class PersonService {
         return personRepository.save(person);
     }
 
+    @Transactional
+    public void deleteUser(long id) {
+        Optional<Person> person = personRepository.findById(id);
+        if (person.isPresent()) {
+            personRepository.deleteById(id);
+        } else {
+            throw new PersonNotFoundException();
+        }
+    }
 
+    @Transactional
+    public Person updatePerson(PersonUpdateDTO personUpdateDTO, long id) {
+        Optional<Person> personSaved = personRepository.findById(id);
+        if (personSaved.isPresent()) {
+            Person person = personSaved.get();
+            person =  mapStructMapper.personUpdateDTOToPerson(personUpdateDTO);
+            person.setId(id);
+            person.setUsername(personSaved.get().getUsername());
+            person.setPassword(passwordEncoder.encode(personUpdateDTO.getPassword()));
+            person.setRolesList(personSaved.get().getRolesList());
+            person.setOrders(personSaved.get().getOrders());
+            return personRepository.save(person);
+        } else {
+            throw new PersonNotFoundException();
+        }
+    }
 
+    public List<Orders> getOrdersOfUser(long id) {
+        return orderService.getOrdersOfUser(id);
+    }
 
 //    @Transactional
 //    public Person addRoleToUser(String username, String roleName) {

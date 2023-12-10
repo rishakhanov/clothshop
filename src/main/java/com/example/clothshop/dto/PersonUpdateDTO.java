@@ -1,22 +1,20 @@
 package com.example.clothshop.dto;
 
-import com.example.clothshop.entity.Orders;
-import com.example.clothshop.entity.Roles;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.List;
-
 @Getter
 @Setter
-public class SignupRequestDTO {
+@Builder
+public class PersonUpdateDTO {
 
-    @NotBlank
-    @Size(min = 3, max = 50)
-    private String username;
+    //private Long id;
+
+    //private String username;
 
     @NotBlank
     @Size(min = 3, max = 50, message = "Firstname should be between 2 and 100 characters")
@@ -27,8 +25,8 @@ public class SignupRequestDTO {
     private String lastname;
 
     @NotBlank
-    @Size(max = 50, message = "Email should not be longer than 50 characters")
     @Email
+    @Size(max = 50, message = "Email should not be longer than 50 characters")
     private String email;
 
     @NotBlank
@@ -36,12 +34,6 @@ public class SignupRequestDTO {
     private String password;
 
     @NotBlank
-    @Size(max = 50)
     private String phone;
-
-    //private List<Orders> orders;
-
-    //private List<Roles> rolesList;
-
 
 }

@@ -1,10 +1,7 @@
 package com.example.clothshop.controller;
 
-import com.example.clothshop.dto.MapStructMapper;
-import com.example.clothshop.dto.PersonDTO;
-import com.example.clothshop.dto.LoginRequestDTO;
-import com.example.clothshop.dto.SignupRequestDTO;
-import com.example.clothshop.dto.JwtResponseDTO;
+import com.example.clothshop.dto.*;
+import com.example.clothshop.entity.Orders;
 import com.example.clothshop.entity.Person;
 import com.example.clothshop.entity.Roles;
 import com.example.clothshop.service.PersonService;
@@ -56,6 +53,61 @@ public class PersonController {
         return ResponseEntity.ok().body(convertToPersonDTO(personService.findByUsername(username)));
     }
 
+    @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public PersonDTO findById(@PathVariable("id") long id) {
+        return convertToPersonDTO(personService.getPersonById(id));
+    }
+
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String delete(@PathVariable("id") long id) {
+        personService.deleteUser(id);
+        return "Person with ID = " + id + " was deleted.";
+    }
+
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public PersonDTO update(@PathVariable("id") long id, @RequestBody @Valid PersonUpdateDTO personUpdateDTO,
+                            BindingResult bindingResult) {
+        personService.checkForValidationErrors(bindingResult);
+        return mapStructMapper.personToPersonDTO(personService.updatePerson(personUpdateDTO, id));
+    }
+
+    @GetMapping("/orders")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public List<PersonOrdersDTO> getOrdersOfUser(Authentication authentication) {
+        //authentication = SecurityContextHolder.getContext().getAuthentication();
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        Long id = userPrincipal.getId();
+        List<Orders> orders = personService.getOrdersOfUser(id);
+        return orders.stream().map(mapStructMapper::orderToPersonOrdersDTO).collect(Collectors.toList());
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<PersonErrorResponse> handlePersonNotFoundException(PersonNotFoundException exception) {
+        PersonErrorResponse response = new PersonErrorResponse("Person with this id wasn't found!");
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<PersonErrorResponse> handlePersonNotCreatedException(PersonNotCreatedException exception) {
+        PersonErrorResponse response = new PersonErrorResponse(exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+
+    @ExceptionHandler ResponseEntity<RoleErrorResponse> handleRoleNotFoundException(RoleNotFoundException exception) {
+        RoleErrorResponse response = new RoleErrorResponse("Role wasn't found!");
+        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+    }
+
+    private PersonDTO convertToPersonDTO(Person person) {
+        return mapStructMapper.personToPersonDTO(person);
+    }
+
+
+    /*
     @PostMapping()
     public ResponseEntity<SignupRequestDTO> createUser(@Valid @RequestBody SignupRequestDTO signupRequestDTO,
                                         BindingResult bindingResult) {
@@ -81,7 +133,8 @@ public class PersonController {
 
         return ResponseEntity.ok(mapStructMapper.personToSignupRequestDTO(personService.save(person)));
     }
-
+    */
+    /*
     @GetMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {
 
@@ -103,8 +156,8 @@ public class PersonController {
                 userDetails.getUsername(),
                 userDetails.getEmail(),
                 roles));
-
     }
+     */
 
 //    @GetMapping("/logout")
 //    public String logout() {
@@ -126,27 +179,6 @@ public class PersonController {
 //    }
 
 
-    @ExceptionHandler
-    private ResponseEntity<PersonErrorResponse> handlePersonNotFoundException(PersonNotFoundException exception) {
-        PersonErrorResponse response = new PersonErrorResponse("Person with this id wasn't found!");
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
-    @ExceptionHandler
-    private ResponseEntity<PersonErrorResponse> handlePersonNotCreatedException(PersonNotCreatedException exception) {
-        PersonErrorResponse response = new PersonErrorResponse(exception.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
-
-
-    @ExceptionHandler ResponseEntity<RoleErrorResponse> handleRoleNotFoundException(RoleNotFoundException exception) {
-        RoleErrorResponse response = new RoleErrorResponse("Role wasn't found!");
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
-    private PersonDTO convertToPersonDTO(Person person) {
-        return mapStructMapper.personToPersonDTO(person);
-    }
 
 
 }

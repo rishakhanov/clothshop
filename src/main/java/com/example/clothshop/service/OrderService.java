@@ -27,16 +27,16 @@ import java.util.Optional;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    private final PersonService personService;
+    //private final PersonService personService;
     private final MapStructMapper mapStructMapper;
     private final ProductOrdersRepository productOrdersRepository;
     private final ProductService productService;
 
 
-    public OrderService(OrderRepository orderRepository, PersonService personService,
-                        MapStructMapper mapStructMapper, ProductOrdersRepository productOrdersRepository, ProductService productService) {
+    public OrderService(OrderRepository orderRepository, MapStructMapper mapStructMapper,
+                        ProductOrdersRepository productOrdersRepository, ProductService productService) {
         this.orderRepository = orderRepository;
-        this.personService = personService;
+        //this.personService = personService;
         this.mapStructMapper = mapStructMapper;
         this.productOrdersRepository = productOrdersRepository;
         this.productService = productService;
@@ -142,7 +142,7 @@ public class OrderService {
     }
 
     public List<Orders> getOrdersOfUser(long userId) {
-        personService.getPersonById(userId);
+        //personService.getPersonById(userId);
         List<Orders> orders = orderRepository.findAllByPersonId(userId);
         return orders;
     }
@@ -165,7 +165,7 @@ public class OrderService {
 
     @Transactional
     public Orders saveNewOrder(OrderDTO orderDTO, long userId) {
-        personService.getPersonById(userId);
+        //personService.getPersonById(userId);
         Orders order = mapStructMapper.orderDTOToOrder(orderDTO);
         order.setShipDate(null);
         order.setStatus(OrdersStatus.NEW);
