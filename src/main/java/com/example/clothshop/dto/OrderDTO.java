@@ -6,11 +6,14 @@ import com.example.clothshop.entity.Product;
 import com.example.clothshop.entity.ProductOrders;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDate;
 import java.util.List;
 
-@Builder
+
+@Setter
 public class OrderDTO {
 
     private Long id;
@@ -18,8 +21,8 @@ public class OrderDTO {
     private List<ProductOrders> productOrders;
     private LocalDate createdAt;
     private LocalDate shipDate;
-    //private String status;
     private OrdersStatus status;
+
 
     public Long getId() {
         return id;
@@ -34,41 +37,20 @@ public class OrderDTO {
         return person;
     }
 
-    public void setPerson(Person person) {
-        this.person = person;
-    }
-
     public LocalDate getCreatedAt() {
         return createdAt;
-    }
-
-    public void setCreatedAt(LocalDate createdAt) {
-        this.createdAt = createdAt;
     }
 
     public LocalDate getShipDate() {
         return shipDate;
     }
 
-    public void setShipDate(LocalDate shipDate) {
-        this.shipDate = shipDate;
-    }
-
-    //public String getStatus() {
     public OrdersStatus getStatus() {
         return status;
-    }
-
-    //public void setStatus(String status) {
-    public void setStatus(OrdersStatus status) {
-        this.status = status;
     }
 
     public List<ProductOrders> getProductOrders() {
         return productOrders;
     }
 
-    public void setProductOrders(List<ProductOrders> productOrders) {
-        this.productOrders = productOrders;
-    }
 }

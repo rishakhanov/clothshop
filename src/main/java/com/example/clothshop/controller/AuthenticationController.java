@@ -9,10 +9,12 @@ import com.example.clothshop.entity.Roles;
 import com.example.clothshop.service.PersonService;
 import com.example.clothshop.service.RolesService;
 import com.example.clothshop.service.UserDetailsImpl;
+import com.example.clothshop.util.exception.PersonErrorResponse;
 import com.example.clothshop.util.exception.PersonNotCreatedException;
 import com.example.clothshop.util.jwt.JwtUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -88,5 +90,10 @@ public class AuthenticationController {
         return ResponseEntity.ok(mapStructMapper.personToSignupRequestDTO(personService.save(person)));
     }
 
+    @ExceptionHandler
+    private ResponseEntity<PersonErrorResponse> handlePersonNotCreatedException(PersonNotCreatedException exception) {
+        PersonErrorResponse response = new PersonErrorResponse(exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
 
 }

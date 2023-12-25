@@ -10,7 +10,7 @@ import java.util.List;
 
 @Getter
 @Setter
-@Builder
+//@Builder
 public class PersonDTO {
 
     private Long id;

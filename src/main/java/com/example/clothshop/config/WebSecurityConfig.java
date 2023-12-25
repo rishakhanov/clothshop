@@ -40,6 +40,7 @@ public class WebSecurityConfig {
         return authProvider;
     }
 
+
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
         return authConfig.getAuthenticationManager();
@@ -60,6 +61,7 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/test/**").permitAll()
                                 .requestMatchers("/api/orders/**").permitAll()
                                 .requestMatchers("/api/auth/**").permitAll()
+                                .requestMatchers("/api/products/**").permitAll()
                                 .anyRequest().authenticated()
                 );
         //http.logout(logout -> logout.logoutSuccessUrl("/api/users/logout"));

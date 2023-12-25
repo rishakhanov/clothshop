@@ -53,7 +53,7 @@ public class PersonController {
         return ResponseEntity.ok().body(convertToPersonDTO(personService.findByUsername(username)));
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/id/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public PersonDTO findById(@PathVariable("id") long id) {
         return convertToPersonDTO(personService.getPersonById(id));
@@ -74,19 +74,19 @@ public class PersonController {
         return mapStructMapper.personToPersonDTO(personService.updatePerson(personUpdateDTO, id));
     }
 
-    @GetMapping("/orders")
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public List<PersonOrdersDTO> getOrdersOfUser(Authentication authentication) {
-        //authentication = SecurityContextHolder.getContext().getAuthentication();
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-        Long id = userPrincipal.getId();
-        List<Orders> orders = personService.getOrdersOfUser(id);
-        return orders.stream().map(mapStructMapper::orderToPersonOrdersDTO).collect(Collectors.toList());
-    }
+//    @GetMapping("/orders")
+//    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+//    public List<PersonOrdersDTO> getOrdersOfUser(Authentication authentication) {
+//        //authentication = SecurityContextHolder.getContext().getAuthentication();
+//        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+//        Long id = userPrincipal.getId();
+//        List<Orders> orders = personService.getOrdersOfUser(id);
+//        return orders.stream().map(mapStructMapper::orderToPersonOrdersDTO).collect(Collectors.toList());
+//    }
 
     @ExceptionHandler
     private ResponseEntity<PersonErrorResponse> handlePersonNotFoundException(PersonNotFoundException exception) {
-        PersonErrorResponse response = new PersonErrorResponse("Person with this id wasn't found!");
+        PersonErrorResponse response = new PersonErrorResponse("User with this id wasn't found!");
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 

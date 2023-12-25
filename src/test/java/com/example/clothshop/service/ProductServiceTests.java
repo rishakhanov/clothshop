@@ -38,7 +38,6 @@ public class ProductServiceTests {
 
     @BeforeEach
     public void setup(){
-
         product = Product.builder()
                 .id(1L)
                 .category(null)
@@ -62,7 +61,6 @@ public class ProductServiceTests {
 
     @Test
     public void givenProductObject_whenSaveProduct_thenReturnProductObject() {
-
         given(productRepository.findByName(product.getName())).willReturn(Optional.empty());
         given(mapStructMapper.productDTOToProduct(productDTO)).willReturn(product);
         given(productRepository.save(product)).willReturn(product);
@@ -136,5 +134,7 @@ public class ProductServiceTests {
 
         verify(productRepository, times(1)).deleteById(productId);
     }
+
+
 
 }

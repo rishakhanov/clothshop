@@ -10,11 +10,13 @@ import com.example.clothshop.util.exception.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +34,9 @@ public class ProductController {
     private final ImageService imageService;
 
     private MapStructMapper mapStructMapper;
+
+    //@Autowired
+    //private AuthenticationManager authenticationManager;
 
     @GetMapping()
     public List<ProductDTO> getProducts() {

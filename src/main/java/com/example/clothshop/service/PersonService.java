@@ -23,13 +23,12 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final MapStructMapper mapStructMapper;
     private final PasswordEncoder passwordEncoder;
-    private final OrderService orderService;
+    //private final OrderService orderService;
 
-    public PersonService(PersonRepository personRepository, MapStructMapper mapStructMapper, PasswordEncoder passwordEncoder, OrderService orderService) {
+    public PersonService(PersonRepository personRepository, MapStructMapper mapStructMapper, PasswordEncoder passwordEncoder) {
         this.personRepository = personRepository;
         this.mapStructMapper = mapStructMapper;
         this.passwordEncoder = passwordEncoder;
-        this.orderService = orderService;
     }
 
     public Person getPersonById(long id) {
@@ -102,9 +101,9 @@ public class PersonService {
         }
     }
 
-    public List<Orders> getOrdersOfUser(long id) {
-        return orderService.getOrdersOfUser(id);
-    }
+//    public List<Orders> getOrdersOfUser(long id) {
+//        return orderService.getOrdersOfUser(id);
+//    }
 
 //    @Transactional
 //    public Person addRoleToUser(String username, String roleName) {

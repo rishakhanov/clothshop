@@ -1,9 +1,7 @@
 package com.example.clothshop.repository;
 
-import com.example.clothshop.entity.Orders;
-import com.example.clothshop.entity.OrdersStatus;
-import com.example.clothshop.entity.Person;
-import com.example.clothshop.entity.Product;
+import com.example.clothshop.entity.*;
+
 import static org.assertj.core.api.Assertions.assertThat;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @DataJpaTest
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
@@ -25,17 +24,16 @@ public class OrdersRepositoryTests {
     @Autowired
     private  PersonRepository personRepository;
 
-    private Orders orders;
+    private Orders order;
 
     @BeforeEach
     public void setup() {
         Person person = personRepository.getReferenceById(1L);
-        List<Product> orderedProducts = new ArrayList<>();
+        List<ProductOrders> productOrders = new ArrayList<>();
 
-
-        orders = Orders.builder()
+        order = Orders.builder()
                 .person(person)
-                .orderedProducts(orderedProducts)
+                .productOrders(productOrders)
                 .createdAt(LocalDate.parse("2023-01-01"))
                 .shipDate(null)
                 .status(OrdersStatus.NEW)
@@ -44,7 +42,7 @@ public class OrdersRepositoryTests {
 
     @Test
     public void givenOrderObject_whenSave_thenReturnSavedObject() {
-        Orders savedOrder = orderRepository.save(orders);
+        Orders savedOrder = orderRepository.save(order);
 
         assertThat(savedOrder).isNotNull();
         assertThat(savedOrder.getId()).isGreaterThan(0);
@@ -61,11 +59,34 @@ public class OrdersRepositoryTests {
 
     @Test
     public void givenOrderObject_whenFindById_thenReturnOrderObject() {
-        Orders savedOrder = orderRepository.save(orders);
+        Orders savedOrder = orderRepository.save(order);
 
         Orders orderDB = orderRepository.findById(savedOrder.getId()).get();
 
         assertThat(orderDB).isNotNull();
 
     }
+
+    @Test
+    public void givenOrderObject_whenUpdateOrder_thenReturnUpdatedOrder() {
+        orderRepository.save(order);
+
+        Orders savedOrder = orderRepository.findById(order.getId()).get();
+        savedOrder.setStatus(OrdersStatus.CANCELED);
+        Orders updatedOder = orderRepository.save(savedOrder);
+
+        assertThat(updatedOder.getStatus()).isEqualTo(OrdersStatus.CANCELED);
+    }
+
+    @Test
+    public void givenOrderObject_whenDelete_thenRemoveOrder() {
+        orderRepository.save(order);
+
+        orderRepository.delete(order);
+        Optional<Orders> orderOptional = orderRepository.findById(order.getId());
+
+        assertThat(orderOptional.isEmpty());
+    }
+
+
 }

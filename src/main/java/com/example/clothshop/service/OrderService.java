@@ -1,17 +1,10 @@
 package com.example.clothshop.service;
 
 import com.example.clothshop.dto.MapStructMapper;
-import com.example.clothshop.dto.OrderDTO;
-import com.example.clothshop.entity.Orders;
-import com.example.clothshop.entity.OrdersStatus;
-import com.example.clothshop.entity.Product;
-import com.example.clothshop.entity.ProductOrders;
+import com.example.clothshop.entity.*;
 import com.example.clothshop.repository.OrderRepository;
 import com.example.clothshop.repository.ProductOrdersRepository;
-import com.example.clothshop.util.exception.OrderNotCreatedException;
-import com.example.clothshop.util.exception.OrderNotFoundException;
-import com.example.clothshop.util.exception.OrderNotFulfilledException;
-import com.example.clothshop.util.exception.ProductNotFoundException;
+import com.example.clothshop.util.exception.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
@@ -27,17 +20,15 @@ import java.util.Optional;
 public class OrderService {
 
     private final OrderRepository orderRepository;
-    //private final PersonService personService;
-    private final MapStructMapper mapStructMapper;
+    private final PersonService personService;
     private final ProductOrdersRepository productOrdersRepository;
     private final ProductService productService;
 
 
-    public OrderService(OrderRepository orderRepository, MapStructMapper mapStructMapper,
+    public OrderService(OrderRepository orderRepository, PersonService personService,
                         ProductOrdersRepository productOrdersRepository, ProductService productService) {
         this.orderRepository = orderRepository;
-        //this.personService = personService;
-        this.mapStructMapper = mapStructMapper;
+        this.personService = personService;
         this.productOrdersRepository = productOrdersRepository;
         this.productService = productService;
     }
@@ -104,10 +95,11 @@ public class OrderService {
     @Transactional
     public boolean deleteOrder(long id) {
         Orders order = getOrderById(id);
+
         if (order.getStatus().getCode().matches("P|CD|CE")) {
             return false;
         } else {
-            orderRepository.delete(order);
+            orderRepository.deleteById(id);
             return true;
         }
     }
@@ -163,13 +155,33 @@ public class OrderService {
         }
     }
 
+    /*
     @Transactional
     public Orders saveNewOrder(OrderDTO orderDTO, long userId) {
         //personService.getPersonById(userId);
         Orders order = mapStructMapper.orderDTOToOrder(orderDTO);
+
         order.setShipDate(null);
         order.setStatus(OrdersStatus.NEW);
         return orderRepository.save(order);
+    }
+    */
+
+    @Transactional
+    public Orders saveNewOrder(long userId) {
+        Person person = personService.getPersonById(userId);
+        Orders order = createOrder(person);
+        return orderRepository.save(order);
+    }
+
+    private Orders createOrder(Person person) {
+        Orders order = new Orders();
+        order.setPerson(person);
+        order.setProductOrders(new ArrayList<>());
+        order.setCreatedAt(LocalDate.now());
+        order.setShipDate(null);
+        order.setStatus(OrdersStatus.NEW);
+        return order;
     }
 
     @Transactional
@@ -235,6 +247,24 @@ public class OrderService {
         order.setShipDate(LocalDate.now());
         order.setStatus(OrdersStatus.COMPLETE);
         return orderRepository.save(order);
+    }
+
+    public void checkAuthority(long personId, long orderId) {
+        Person person = personService.getPersonById(personId);
+        List<Roles> rolesList = person.getRolesList();
+        for (Roles role : rolesList) {
+            if (role.getName().equals("ROLE_ADMIN")) {
+                return;
+            }
+        }
+        Optional<Orders> order = orderRepository.findById(orderId);
+        if (order.isPresent()) {
+            if (order.get().getPerson().getId() == personId) {
+                return;
+            } else {
+                throw new PersonUnauthorizedException();
+            }
+        }
     }
 
     //        if (quantity > product.getQuantity()) {
