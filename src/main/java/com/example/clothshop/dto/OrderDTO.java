@@ -14,6 +14,7 @@ import java.util.List;
 
 
 @Setter
+@Builder
 public class OrderDTO {
 
     private Long id;

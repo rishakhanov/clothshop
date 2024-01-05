@@ -21,6 +21,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,12 +41,16 @@ public class ProductController {
 
     @GetMapping()
     public List<ProductDTO> getProducts() {
-        return productService.getProducts().stream().map(this::convertToProductDTO).collect(Collectors.toList());
+        return productService
+                .getProducts()
+                .stream()
+                .map(e -> mapStructMapper.productToProductDTO(e))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/{id}")
     public ProductDTO getProduct(@PathVariable("id") long id) {
-        return convertToProductDTO(productService.getProductById(id));
+        return mapStructMapper.productToProductDTO(productService.getProductById(id));
     }
 
     @GetMapping("/{id}/photo")
@@ -85,11 +90,12 @@ public class ProductController {
     public ProductDTO update(@PathVariable("id") long id, @RequestBody @Valid ProductDTO productDTO,
                                              BindingResult bindingResult) {
         productService.checkForValidationErrors(bindingResult);
-        return convertToProductDTO(productService.updateProduct(productDTO, id));
+        return mapStructMapper.productToProductDTO(productService.updateProduct(productDTO, id));
     }
 
     @DeleteMapping("/{id}")
-    public String delete(@PathVariable long id) {
+    @ResponseStatus(HttpStatus.OK)
+    public String delete(@PathVariable("id") long id) {
         productService.deleteProduct(id);
         return "Product with ID = " + id + " was deleted.";
     }

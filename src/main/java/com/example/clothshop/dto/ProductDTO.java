@@ -4,6 +4,7 @@ import com.example.clothshop.entity.Category;
 import com.example.clothshop.entity.Image;
 import com.example.clothshop.entity.Vendor;
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Size;

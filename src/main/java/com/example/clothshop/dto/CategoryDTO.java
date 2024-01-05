@@ -25,7 +25,7 @@ public class CategoryDTO {
         return id;
     }
 
-    @JsonManagedReference(value = "product-category")
+    //@JsonBackReference(value = "product-category")
     public List<Product> getProducts() {
         return products;
     }
@@ -33,4 +33,6 @@ public class CategoryDTO {
     public String getName() {
         return name;
     }
+
+
 }

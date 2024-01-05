@@ -33,12 +33,13 @@ import java.util.stream.Collectors;
 @RequestMapping("/api/auth")
 public class AuthenticationController {
 
-    private final AuthenticationManager authenticationManager;
-    private final PersonService personService;
-    private final RolesService rolesService;
-    private final MapStructMapper mapStructMapper;
-    private final PasswordEncoder encoder;
-    private final JwtUtils jwtUtils;
+
+    private AuthenticationManager authenticationManager;
+    private PersonService personService;
+    private RolesService rolesService;
+    private MapStructMapper mapStructMapper;
+    private PasswordEncoder encoder;
+    private JwtUtils jwtUtils;
 
     @GetMapping("/login")
     public ResponseEntity<?> login(@Valid @RequestBody LoginRequestDTO loginRequestDTO) {

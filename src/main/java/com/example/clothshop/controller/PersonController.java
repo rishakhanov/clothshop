@@ -56,7 +56,7 @@ public class PersonController {
     @GetMapping("/id/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public PersonDTO findById(@PathVariable("id") long id) {
-        return convertToPersonDTO(personService.getPersonById(id));
+        return mapStructMapper.personToPersonDTO(personService.getPersonById(id));
     }
 
     @DeleteMapping("/{id}")

@@ -36,7 +36,7 @@ public class CategoryController {
 
     @GetMapping("/{id}")
     public CategoryDTO getCategory(@PathVariable("id") long id) {
-        return convertToCategoryDTO(categoryService.getCategoryById(id));
+        return mapStructMapper.categoryToCategoryDTO(categoryService.getCategoryById(id));
     }
 
     @GetMapping("/{id}/products")
@@ -61,6 +61,7 @@ public class CategoryController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public String delete(@PathVariable long id) {
         categoryService.deleteCategory(id);
         return "Category with ID = " + id + " was deleted.";

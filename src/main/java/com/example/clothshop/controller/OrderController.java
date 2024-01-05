@@ -36,6 +36,13 @@ public class OrderController {
         return orderService.getOrders().stream().map(this::convertToOrderDTO).collect(Collectors.toList());
     }
 
+    @GetMapping("/oid/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public OrderDTO getOrderById(@PathVariable("id") long id) {
+        return mapStructMapper.orderToOrderDTO(orderService.getOrderById(id));
+    }
+
+
     @GetMapping("/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public OrderDTO getOrder(@PathVariable("id") long id, Authentication authentication) {
@@ -86,6 +93,15 @@ public class OrderController {
 //                orderService.addProductToOrder(id, product, productDTO.getQuantity()));
     }
 
+    @DeleteMapping("/oid/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.OK)
+    public String deleteById(@PathVariable long id) {
+        orderService.deleteOrder(id);
+        return "Order with ID = " + id + " was deleted.";
+    }
+
+
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
     public String delete(@PathVariable long id, Authentication authentication) {
@@ -93,11 +109,8 @@ public class OrderController {
         Long personId = userPrincipal.getId();
         orderService.checkAuthority(personId, id);
 
-        if (orderService.deleteOrder(id)) {
-            return "Order with ID = " + id + " was deleted.";
-        } else {
-            return "Order with ID = " + id + " was paid, canceled or complete and cannot be deleted.";
-        }
+        orderService.deleteOrder(id);
+        return "Order with ID = " + id + " was deleted.";
     }
 
     @DeleteMapping("/{oid}/items/{iid}")
@@ -138,6 +151,7 @@ public class OrderController {
     */
     @PostMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
+    @ResponseStatus(HttpStatus.CREATED)
     public OrderDTO createOrderForPerson(@PathVariable("id") long id) {
         return mapStructMapper.orderToOrderDTO(orderService.saveNewOrder(id));
     }
@@ -190,6 +204,12 @@ public class OrderController {
 
     @ExceptionHandler
     private ResponseEntity<OrderErrorResponse> handleOrderNotFulfilledException(OrderNotFulfilledException exception) {
+        OrderErrorResponse response = new OrderErrorResponse(exception.getMessage());
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler
+    private ResponseEntity<OrderErrorResponse> handleOrderCouldNotBeDeletedException(OrderCouldNotBeDeletedException exception) {
         OrderErrorResponse response = new OrderErrorResponse(exception.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }

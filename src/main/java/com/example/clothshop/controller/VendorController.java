@@ -36,7 +36,7 @@ public class VendorController {
 
     @GetMapping("/{id}")
     public VendorDTO getVendor(@PathVariable("id") long id) {
-        return convertToVendorDTO(vendorService.getVendorById(id));
+        return mapStructMapper.vendorToVendorDTO(vendorService.getVendorById(id));
     }
 
     @GetMapping("/{id}/products")
@@ -61,6 +61,7 @@ public class VendorController {
     }
 
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.OK)
     public String delete(@PathVariable long id) {
         vendorService.deleteVendor(id);
         return "Vendor with ID = " + id + " was deleted.";

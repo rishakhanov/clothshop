@@ -61,7 +61,7 @@ public class OrdersServiceTests {
 
     }
 
-/*
+
     @Test
     public void givenOrderObject_whenSaveOrder_thenReturnOrderObject() {
         given(personService.getPersonById(person.getId())).willReturn(person);
@@ -73,7 +73,7 @@ public class OrdersServiceTests {
 
         assertThat(savedOrder).isNotNull();
     }
-*/
+
 
     @Test
     public void givenOrdersList_whenGetAllOrders_thenReturnOrdersList() {

@@ -93,14 +93,13 @@ public class OrderService {
     }
 
     @Transactional
-    public boolean deleteOrder(long id) {
+    public void deleteOrder(long id) {
         Orders order = getOrderById(id);
 
         if (order.getStatus().getCode().matches("P|CD|CE")) {
-            return false;
+            throw new OrderCouldNotBeDeletedException("Order with ID = " + id + " was paid, canceled or complete and cannot be deleted.");
         } else {
             orderRepository.deleteById(id);
-            return true;
         }
     }
 
