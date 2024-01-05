@@ -43,7 +43,7 @@ public class PersonController {
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<PersonDTO>> findAll() {
-        return ResponseEntity.ok().body(personService.findAll().stream().map(this::convertToPersonDTO)
+        return ResponseEntity.ok().body(personService.findAll().stream().map(e -> mapStructMapper.personToPersonDTO(e))
                 .collect(Collectors.toList()));
     }
 

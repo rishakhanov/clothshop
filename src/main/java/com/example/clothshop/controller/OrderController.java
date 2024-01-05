@@ -33,7 +33,8 @@ public class OrderController {
     @GetMapping()
     @PreAuthorize("hasRole('ADMIN')")
     public List<OrderDTO> getOrders() {
-        return orderService.getOrders().stream().map(this::convertToOrderDTO).collect(Collectors.toList());
+        return orderService.getOrders().stream().map(e -> mapStructMapper.orderToOrderDTO(e))
+                .collect(Collectors.toList());
     }
 
     @GetMapping("/oid/{id}")

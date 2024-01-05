@@ -3,11 +3,13 @@ package com.example.clothshop.controller;
 import com.example.clothshop.config.WebSecurityConfig;
 import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.dto.OrderDTO;
+import com.example.clothshop.entity.Orders;
 import com.example.clothshop.entity.OrdersStatus;
 import com.example.clothshop.service.OrderService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -31,6 +33,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @SpringBootTest
@@ -98,6 +102,62 @@ public class OrderControllerTests {
 
         response.andDo(print())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.status", CoreMatchers.is(canceledOrderDTO.getStatus().toString())));
+
+    }
+
+    @Test
+    @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})
+    public void givenListOfOrders_whenGetAllOrders_thenReturnOrdersList() throws Exception {
+        List<Orders> ordersList = new ArrayList<>();
+        Orders order1 = Orders.builder()
+                .id(1L)
+                .person(null)
+                .productOrders(null)
+                .createdAt(LocalDate.now())
+                .shipDate(null)
+                .status(OrdersStatus.NEW)
+                .build();
+        Orders order2 = Orders.builder()
+                .id(2L)
+                .person(null)
+                .productOrders(null)
+                .createdAt(LocalDate.now())
+                .shipDate(null)
+                .status(OrdersStatus.NEW)
+                .build();
+        ordersList.add(order1);
+        ordersList.add(order2);
+
+        List<OrderDTO> orderDTOList = new ArrayList<>();
+        OrderDTO orderDTO1 = OrderDTO.builder()
+                .person(null)
+                .productOrders(null)
+                .createdAt(LocalDate.now())
+                .shipDate(null)
+                .status(OrdersStatus.NEW)
+                .build();
+        OrderDTO orderDTO2 = OrderDTO.builder()
+                .person(null)
+                .productOrders(null)
+                .createdAt(LocalDate.now())
+                .shipDate(null)
+                .status(OrdersStatus.NEW)
+                .build();
+
+        orderDTOList.add(orderDTO1);
+        orderDTOList.add(orderDTO2);
+
+        BDDMockito.given(orderService.getOrders()).willReturn(ordersList);
+
+        BDDMockito.given(mapStructMapper.orderToOrderDTO(ArgumentMatchers.any(Orders.class)))
+                .willReturn(orderDTO1, orderDTO2);
+
+        ResultActions response = mockMvc.perform(get("/api/orders"));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size()",
+                        CoreMatchers.is(orderDTOList.size())));
 
     }
 

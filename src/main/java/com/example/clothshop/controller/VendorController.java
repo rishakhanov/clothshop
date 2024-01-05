@@ -30,7 +30,7 @@ public class VendorController {
 
     @GetMapping()
     public List<VendorDTO> getVendors() {
-        return vendorService.getVendors().stream().map(this::convertToVendorDTO)
+        return vendorService.getVendors().stream().map(e -> mapStructMapper.vendorToVendorDTO(e))
                 .collect(Collectors.toList());
     }
 

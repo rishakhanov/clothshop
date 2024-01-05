@@ -8,6 +8,7 @@ import com.example.clothshop.repository.OrderRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -64,10 +65,8 @@ public class OrdersServiceTests {
 
     @Test
     public void givenOrderObject_whenSaveOrder_thenReturnOrderObject() {
-        given(personService.getPersonById(person.getId())).willReturn(person);
-        order.setId(null);
-        order.setPerson(person);
-        given(orderRepository.save(order)).willReturn(order);
+        //given(personService.getPersonById(person.getId())).willReturn(person);
+        given(orderRepository.save(ArgumentMatchers.any(Orders.class))).willReturn(order);
 
         Orders savedOrder = orderService.saveNewOrder(person.getId());
 

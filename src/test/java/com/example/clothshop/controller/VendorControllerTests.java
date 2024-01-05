@@ -2,6 +2,7 @@ package com.example.clothshop.controller;
 
 import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.dto.VendorDTO;
+import com.example.clothshop.entity.Vendor;
 import com.example.clothshop.service.VendorService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;
@@ -18,6 +19,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.validation.BindingResult;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -84,6 +88,50 @@ public class VendorControllerTests {
                 .andExpect(jsonPath("$.name", CoreMatchers.is(updatedVendorDTO.getName())));
 
     }
+
+    @Test
+    public void givenListOfVendors_whenGetAllVendors_thenReturnVendorsList() throws Exception {
+        List<Vendor> vendorList = new ArrayList<>();
+        Vendor vendor1 = Vendor.builder()
+                .id(1L)
+                .products(null)
+                .name("VendorTestName1")
+                .build();
+        Vendor vendor2 = Vendor.builder()
+                .id(2L)
+                .products(null)
+                .name("VendorTestName2")
+                .build();
+        vendorList.add(vendor1);
+        vendorList.add(vendor2);
+
+        List<VendorDTO> vendorDTOList = new ArrayList<>();
+        VendorDTO vendorDTO1 = VendorDTO.builder()
+                .id(1L)
+                .products(null)
+                .name("VendorTestName1")
+                .build();
+        VendorDTO vendorDTO2 = VendorDTO.builder()
+                .id(2L)
+                .products(null)
+                .name("VendorTestName2")
+                .build();
+        vendorDTOList.add(vendorDTO1);
+        vendorDTOList.add(vendorDTO2);
+
+        BDDMockito.given(vendorService.getVendors()).willReturn(vendorList);
+
+        BDDMockito.given(mapStructMapper.vendorToVendorDTO(ArgumentMatchers.any(Vendor.class)))
+                .willReturn(vendorDTO1, vendorDTO2);
+
+        ResultActions response = mockMvc.perform(get("/api/vendors"));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size()",
+                        CoreMatchers.is(vendorDTOList.size())));
+    }
+
 
     @Test
     public void givenVendorId_whenGetVendorById_thenReturnVendorObject() throws Exception {

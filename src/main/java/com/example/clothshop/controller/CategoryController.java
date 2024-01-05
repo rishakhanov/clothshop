@@ -30,7 +30,7 @@ public class CategoryController {
 
     @GetMapping()
     public List<CategoryDTO> getCategories() {
-        return categoryService.getCategories().stream().map(this::convertToCategoryDTO)
+        return categoryService.getCategories().stream().map(e -> mapStructMapper.categoryToCategoryDTO(e))
                 .collect(Collectors.toList());
     }
 

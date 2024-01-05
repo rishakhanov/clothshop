@@ -5,6 +5,7 @@ import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.dto.PersonDTO;
 import com.example.clothshop.dto.PersonUpdateDTO;
 import com.example.clothshop.dto.ProductDTO;
+import com.example.clothshop.entity.Person;
 import com.example.clothshop.service.PersonService;
 import com.example.clothshop.service.ProductService;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -23,6 +24,10 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.validation.BindingResult;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -82,6 +87,69 @@ public class PersonControllerTest {
         response.andDo(print())
                 .andExpect(jsonPath("$.username", CoreMatchers.is(personDTO.getUsername())));
     }
+
+    @Test
+    @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})
+    public void givenListOfPersons_whenGetAllPersons_thenReturnPersonsList() throws Exception {
+        List<Person> personList = new ArrayList<>();
+        Person person1 = Person.builder()
+                .orders(null)
+                .rolesList(null)
+                .username("UsernameTest1")
+                .firstname("FirstNameTest1")
+                .lastname("LastNameTest1")
+                .email("email1@gmail.com")
+                .password("PasswordTest1")
+                .phone("1-11-111")
+                .build();
+        Person person2 = Person.builder()
+                .orders(null)
+                .rolesList(null)
+                .username("UsernameTest2")
+                .firstname("FirstNameTest2")
+                .lastname("LastNameTest2")
+                .email("email2@gmail.com")
+                .password("PasswordTest2")
+                .phone("2-22-222")
+                .build();
+        personList.add(person1);
+        personList.add(person2);
+
+        List<PersonDTO> personDTOList = new ArrayList<>();
+        PersonDTO personDTO1 = PersonDTO.builder()
+                .username("UsernameTest1")
+                .firstname("FirstNameTest1")
+                .lastname("LastNameTest1")
+                .email("email1@gmail.com")
+                .password("PasswordTest1")
+                .phone("1-11-111")
+                .orders(null)
+                .build();
+        PersonDTO personDTO2 = PersonDTO.builder()
+                .username("UsernameTest2")
+                .firstname("FirstNameTest2")
+                .lastname("LastNameTest2")
+                .email("email2@gmail.com")
+                .password("PasswordTest2")
+                .phone("2-22-222")
+                .orders(null)
+                .build();
+        personDTOList.add(personDTO1);
+        personDTOList.add(personDTO2);
+
+        BDDMockito.given(personService.findAll()).willReturn(personList);
+
+        BDDMockito.given(mapStructMapper.personToPersonDTO(ArgumentMatchers.any(Person.class)))
+                .willReturn(personDTO1, personDTO2);
+
+        ResultActions response = mockMvc.perform(get("/api/users"));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size()",
+                        CoreMatchers.is(personDTOList.size())));
+    }
+
 
     @Test
     @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})

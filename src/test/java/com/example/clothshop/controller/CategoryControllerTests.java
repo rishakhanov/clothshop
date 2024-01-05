@@ -2,6 +2,7 @@ package com.example.clothshop.controller;
 
 import com.example.clothshop.dto.CategoryDTO;
 import com.example.clothshop.dto.MapStructMapper;
+import com.example.clothshop.entity.Category;
 import com.example.clothshop.service.CategoryService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;
@@ -18,6 +19,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.validation.BindingResult;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -89,7 +93,47 @@ public class CategoryControllerTests {
                 .andExpect(jsonPath("$.name", CoreMatchers.is(updatedCategoryDTO.getName())));
     }
 
+    @Test
+    public void givenListOfCategories_whenGetAllCategories_thenRetrunCategoriesList() throws Exception {
+        List<Category> categoryList = new ArrayList<>();
+        Category category1 = Category.builder()
+                .id(1L)
+                .products(null)
+                .name("CategoryTestName1")
+                .build();
+        Category category2 = Category.builder()
+                .id(1L)
+                .products(null)
+                .name("CategoryTestName2")
+                .build();
+        categoryList.add(category1);
+        categoryList.add(category2);
 
+        List<CategoryDTO> categoryDTOList = new ArrayList<>();
+        CategoryDTO categoryDTO1 = CategoryDTO.builder()
+                .id(1L)
+                .products(null)
+                .name("CategoryTestName1")
+                .build();
+        CategoryDTO categoryDTO2 = CategoryDTO.builder()
+                .id(2L)
+                .products(null)
+                .name("CategoryTestName2")
+                .build();
+        categoryDTOList.add(categoryDTO1);
+        categoryDTOList.add(categoryDTO2);
+
+        BDDMockito.given(categoryService.getCategories()).willReturn(categoryList);
+
+        BDDMockito.given(mapStructMapper.categoryToCategoryDTO(ArgumentMatchers.any(Category.class)))
+                .willReturn(categoryDTO1, categoryDTO2);
+
+        ResultActions response = mockMvc.perform(get("/api/categories"));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", CoreMatchers.is(categoryDTOList.size())));
+    }
 
     @Test
     public void givenCategoryId_whenGetCategoryById_thenReturnCategoryObject() throws Exception {
