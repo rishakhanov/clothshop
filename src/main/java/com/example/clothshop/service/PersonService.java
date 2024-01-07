@@ -23,7 +23,6 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final MapStructMapper mapStructMapper;
     private final PasswordEncoder passwordEncoder;
-    //private final OrderService orderService;
 
     public PersonService(PersonRepository personRepository, MapStructMapper mapStructMapper, PasswordEncoder passwordEncoder) {
         this.personRepository = personRepository;
@@ -101,35 +100,4 @@ public class PersonService {
         }
     }
 
-//    public List<Orders> getOrdersOfUser(long id) {
-//        return orderService.getOrdersOfUser(id);
-//    }
-
-//    @Transactional
-//    public Person addRoleToUser(String username, String roleName) {
-//        Optional<Person> person = personRepository.findByUsername(username);
-//        if (person.isPresent()) {
-//            Roles roles = rolesRepository.findByName(roleName);
-//            person.get().getRolesList().add(roles);
-//        }
-//        return person.orElseThrow(PersonNotFoundException::new);
-//    }
-
-
-
-//    @Override
-//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-//        Person person = personRepository.findByUsername(username);
-//        if (person == null) {
-//            String message = String.format("User with username %s not found", username);
-//            throw new UsernameNotFoundException(message);
-//        } else {
-//            List<SimpleGrantedAuthority> authorities = new ArrayList<>();
-//            person.getRolesList().forEach(role -> {
-//                authorities.add(new SimpleGrantedAuthority(role.getName()));
-//            });
-//            return new User(person.getUsername(), person.getPassword(), authorities);
-//        }
-//
-//    }
 }

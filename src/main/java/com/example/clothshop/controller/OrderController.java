@@ -90,8 +90,6 @@ public class OrderController {
         orderProductDTO.setPrice(product.getPrice());
         orderProductDTO.setName(product.getName());
         return orderProductDTO;
-//        return mapStructMapper.productToProductDTO(
-//                orderService.addProductToOrder(id, product, productDTO.getQuantity()));
     }
 
     @DeleteMapping("/oid/{id}")
@@ -109,7 +107,6 @@ public class OrderController {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
         Long personId = userPrincipal.getId();
         orderService.checkAuthority(personId, id);
-
         orderService.deleteOrder(id);
         return "Order with ID = " + id + " was deleted.";
     }
@@ -121,7 +118,6 @@ public class OrderController {
         UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
         Long personId = userPrincipal.getId();
         orderService.checkAuthority(personId, oid);
-
         orderService.deleteProductOfOrder(oid, iid);
         return "Product with ID = " + iid + " was deleted from order with ID = " + oid;
     }
@@ -142,14 +138,6 @@ public class OrderController {
         return orders.stream().map(mapStructMapper::orderToPersonOrdersDTO).collect(Collectors.toList());
     }
 
-    /*
-    @PostMapping("/users/{id}")
-    public OrderDTO createOrderForPerson(@PathVariable("id") long id, @RequestBody @Valid OrderDTO orderDTO,
-                                         BindingResult bindingResult) {
-        orderService.checkForValidationErrors(bindingResult);
-        return mapStructMapper.orderToOrderDTO(orderService.saveNewOrder(orderDTO, id));
-    }
-    */
     @PostMapping("/users/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     @ResponseStatus(HttpStatus.CREATED)

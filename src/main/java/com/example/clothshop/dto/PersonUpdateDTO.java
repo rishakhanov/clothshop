@@ -12,10 +12,6 @@ import lombok.Setter;
 @Builder
 public class PersonUpdateDTO {
 
-    //private Long id;
-
-    //private String username;
-
     @NotBlank
     @Size(min = 3, max = 50, message = "Firstname should be between 2 and 100 characters")
     private String firstname;

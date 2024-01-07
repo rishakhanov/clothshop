@@ -67,10 +67,6 @@ public class CategoryController {
         return "Category with ID = " + id + " was deleted.";
     }
 
-    private CategoryDTO convertToCategoryDTO(Category category) {
-        return mapStructMapper.categoryToCategoryDTO(category);
-    }
-
     @ExceptionHandler
     private ResponseEntity<CategoryErrorResponse> handleCategoryNotFoundException(CategoryNotFoundException exception) {
         CategoryErrorResponse response = new CategoryErrorResponse("Category with this id wasn't found!");

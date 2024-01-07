@@ -107,7 +107,5 @@ public class JwtUtils {
         return false;
     }
 
-//    public ResponseCookie getCleanJwtCookie() {
-//        ResponseCookie cookie = ResponseCookie.from(jwtC)
-//    }
+
 }

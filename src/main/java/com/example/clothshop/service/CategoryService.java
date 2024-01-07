@@ -20,7 +20,6 @@ import java.util.Optional;
 public class CategoryService {
 
     private final CategoryRepository categoryRepository;
-
     private final MapStructMapper mapStructMapper;
 
     public CategoryService(CategoryRepository categoryRepository, MapStructMapper mapStructMapper) {

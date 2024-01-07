@@ -30,12 +30,6 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-
-//    public AuthTokenFilter(JwtUtils jwtUtils, UserDetailsServiceImpl userDetailsService) {
-//        this.jwtUtils = jwtUtils;
-//        this.userDetailsService = userDetailsService;
-//    }
-
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try {

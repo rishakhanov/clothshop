@@ -33,11 +33,8 @@ public class ProductController {
 
     private final ProductService productService;
     private final ImageService imageService;
-
     private MapStructMapper mapStructMapper;
 
-    //@Autowired
-    //private AuthenticationManager authenticationManager;
 
     @GetMapping()
     public List<ProductDTO> getProducts() {
@@ -128,10 +125,6 @@ public class ProductController {
     private ResponseEntity<VendorErrorResponse> handleVendorNotFoundException(VendorNotFoundException exception) {
         VendorErrorResponse response = new VendorErrorResponse("Vendor with this id wasn't found!");
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
-
-    private ProductDTO convertToProductDTO(Product product) {
-        return mapStructMapper.productToProductDTO(product);
     }
 
 }

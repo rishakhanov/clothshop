@@ -54,8 +54,6 @@ public class OrderService {
             products.add(product);
         }
         return products;
-        //return productOrders.stream().map(ProductOrders::getProduct).toList();
-        //return productOrdersService.getProductsByOrderId(id);
     }
 
     public Product getOrderItem(long oid, long iid) {
@@ -89,7 +87,6 @@ public class OrderService {
         order.setProductOrders(productOrders);
         orderRepository.save(order);
         return product;
-        //return productOrdersService.addProductToOrder(order, product, quantity);
     }
 
     @Transactional
@@ -107,9 +104,6 @@ public class OrderService {
     public void deleteProductOfOrder(long orderId, long productId) {
         Orders order = getOrderById(orderId);
         List<ProductOrders> productOrders = order.getProductOrders();
-
-        //productOrdersService.deleteProductOfOrder(order, productId);
-
         List<ProductOrders> updatedProductsList = new ArrayList<>();
         boolean productNotFound = true;
 
@@ -133,7 +127,6 @@ public class OrderService {
     }
 
     public List<Orders> getOrdersOfUser(long userId) {
-        //personService.getPersonById(userId);
         List<Orders> orders = orderRepository.findAllByPersonId(userId);
         return orders;
     }
@@ -153,18 +146,6 @@ public class OrderService {
             throw new OrderNotCreatedException(errorMsg.toString());
         }
     }
-
-    /*
-    @Transactional
-    public Orders saveNewOrder(OrderDTO orderDTO, long userId) {
-        //personService.getPersonById(userId);
-        Orders order = mapStructMapper.orderDTOToOrder(orderDTO);
-
-        order.setShipDate(null);
-        order.setStatus(OrdersStatus.NEW);
-        return orderRepository.save(order);
-    }
-    */
 
     @Transactional
     public Orders saveNewOrder(long userId) {
@@ -266,9 +247,5 @@ public class OrderService {
         }
     }
 
-    //        if (quantity > product.getQuantity()) {
-//            throw new OrderNotCreatedException("Order cannot be created. " + product.getName()
-//                    + " order quantity (" + quantity + ") exceeds the available stock level ("
-//                    + product.getQuantity() + ")");
-//        }
+
 }

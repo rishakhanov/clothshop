@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 public class VendorController {
 
     private final VendorService vendorService;
-
     private final MapStructMapper mapStructMapper;
 
     @GetMapping()
@@ -65,10 +64,6 @@ public class VendorController {
     public String delete(@PathVariable long id) {
         vendorService.deleteVendor(id);
         return "Vendor with ID = " + id + " was deleted.";
-    }
-
-    private VendorDTO convertToVendorDTO(Vendor vendor) {
-        return mapStructMapper.vendorToVendorDTO(vendor);
     }
 
     @ExceptionHandler

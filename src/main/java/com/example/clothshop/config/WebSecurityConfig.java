@@ -68,7 +68,6 @@ public class WebSecurityConfig {
                                 .requestMatchers("/api/products/**").permitAll()
                                 .anyRequest().authenticated()
                 );
-        //http.logout(logout -> logout.logoutSuccessUrl("/api/users/logout"));
         http.authenticationProvider(authenticationProvider());
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
