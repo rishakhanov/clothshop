@@ -19,7 +19,7 @@ public class OrderDTO {
 
     private Long id;
     private Person person;
-    private List<ProductOrders> productOrders;
+    //private List<ProductOrders> productOrders;
     private LocalDate createdAt;
     private LocalDate shipDate;
     private OrdersStatus status;
@@ -50,8 +50,8 @@ public class OrderDTO {
         return status;
     }
 
-    public List<ProductOrders> getProductOrders() {
+    /*public List<ProductOrders> getProductOrders() {
         return productOrders;
-    }
+    }*/
 
 }

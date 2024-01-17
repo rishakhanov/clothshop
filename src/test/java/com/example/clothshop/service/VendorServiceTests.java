@@ -49,7 +49,7 @@ public class VendorServiceTests {
 
         vendorDTO = VendorDTO.builder()
                 .id(1L)
-                .products(new ArrayList<>())
+                //.products(new ArrayList<>())
                 .name("VendorTest")
                 .build();
     }

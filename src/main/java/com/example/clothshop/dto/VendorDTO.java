@@ -16,7 +16,7 @@ import java.util.List;
 public class VendorDTO {
 
     private Long id;
-    private List<Product> products;
+    //private List<Product> products;
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 100, message = "Name should be between 2 and 100 characters")
     private String name;
@@ -26,9 +26,9 @@ public class VendorDTO {
     }
 
     //@JsonManagedReference(value = "product-vendor")
-    public List<Product> getProducts() {
-        return products;
-    }
+//    public List<Product> getProducts() {
+//        return products;
+//    }
 
     public String getName() {
         return name;

@@ -46,7 +46,7 @@ public class JwtUtils {
                 .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .claim("id", userPrincipal.getId())
                 .claim("email", userPrincipal.getEmail())
-                .claim("password", userPrincipal.getPassword())
+                //.claim("password", userPrincipal.getPassword())//убрать
                 .claim("roles", userPrincipal.getAuthorities())
                 .signWith(key(), SignatureAlgorithm.HS256)
                 .compact();

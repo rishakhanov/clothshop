@@ -50,7 +50,7 @@ public class CategoryControllerTests {
     @Test
     public void givenCategoryDTOObject_whenCreateCategory_thenReturnSavedCategory() throws Exception {
         CategoryDTO categoryDTO = CategoryDTO.builder()
-                .products(null)
+                //.products(null)
                 .name("CategoryNameTest")
                 .build();
 
@@ -71,12 +71,12 @@ public class CategoryControllerTests {
     @Test
     public void givenUpdateCategory_whenUpdateCategory_thenReturnUpdatedCategoryObject() throws Exception {
         long categoryId = 1L;
-        CategoryDTO categoryDTO = CategoryDTO.builder()
-                .products(null)
-                .name("CategoryTestName")
-                .build();
+        //CategoryDTO categoryDTO = CategoryDTO.builder()
+                //.products(null)
+                //.name("CategoryTestName")
+                //.build();
         CategoryDTO updatedCategoryDTO = CategoryDTO.builder()
-                .products(null)
+                //.products(null)
                 .name("CategoryTestNameUpdated")
                 .build();
 
@@ -94,7 +94,7 @@ public class CategoryControllerTests {
     }
 
     @Test
-    public void givenListOfCategories_whenGetAllCategories_thenRetrunCategoriesList() throws Exception {
+    public void givenListOfCategories_whenGetAllCategories_thenReturnCategoriesList() throws Exception {
         List<Category> categoryList = new ArrayList<>();
         Category category1 = Category.builder()
                 .id(1L)
@@ -112,12 +112,12 @@ public class CategoryControllerTests {
         List<CategoryDTO> categoryDTOList = new ArrayList<>();
         CategoryDTO categoryDTO1 = CategoryDTO.builder()
                 .id(1L)
-                .products(null)
+                //.products(null)
                 .name("CategoryTestName1")
                 .build();
         CategoryDTO categoryDTO2 = CategoryDTO.builder()
                 .id(2L)
-                .products(null)
+                //.products(null)
                 .name("CategoryTestName2")
                 .build();
         categoryDTOList.add(categoryDTO1);
@@ -139,7 +139,7 @@ public class CategoryControllerTests {
     public void givenCategoryId_whenGetCategoryById_thenReturnCategoryObject() throws Exception {
         long categoryId = 1L;
         CategoryDTO categoryDTO = CategoryDTO.builder()
-                .products(null)
+                //.products(null)
                 .name("CategoryNameTest")
                 .build();
 

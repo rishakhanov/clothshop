@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -68,6 +69,7 @@ public class CategoryService {
             throw new CategoryNotCreatedException("The category already exists.");
         } else {
             Category category = mapStructMapper.categoryDTOToCategory(categoryDTO);
+            //category.setProducts(new ArrayList<>());
             return categoryRepository.save(category);
         }
     }

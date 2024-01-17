@@ -49,7 +49,7 @@ public class VendorControllerTests {
     @Test
     public void givenVendorDTOObject_whenCreateVendor_thenReturnSavedVendor() throws Exception {
         VendorDTO vendorDTO = VendorDTO.builder()
-                .products(null)
+                //.products(null)
                 .name("VendorTestName")
                 .build();
 
@@ -71,7 +71,7 @@ public class VendorControllerTests {
     public void givenUpdatedVendor_whenUpdateVendor_thenReturnUpdatedVendorObject() throws Exception {
         long vendorId = 1L;
         VendorDTO updatedVendorDTO = VendorDTO.builder()
-                .products(null)
+                //.products(null)
                 .name("VendorUpdatedTestName")
                 .build();
 
@@ -108,12 +108,12 @@ public class VendorControllerTests {
         List<VendorDTO> vendorDTOList = new ArrayList<>();
         VendorDTO vendorDTO1 = VendorDTO.builder()
                 .id(1L)
-                .products(null)
+                //.products(null)
                 .name("VendorTestName1")
                 .build();
         VendorDTO vendorDTO2 = VendorDTO.builder()
                 .id(2L)
-                .products(null)
+                //.products(null)
                 .name("VendorTestName2")
                 .build();
         vendorDTOList.add(vendorDTO1);
@@ -137,7 +137,7 @@ public class VendorControllerTests {
     public void givenVendorId_whenGetVendorById_thenReturnVendorObject() throws Exception {
         long vendorId = 1L;
         VendorDTO vendorDTO = VendorDTO.builder()
-                .products(null)
+                //.products(null)
                 .name("VendorTestName")
                 .build();
 

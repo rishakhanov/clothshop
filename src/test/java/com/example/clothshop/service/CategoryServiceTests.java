@@ -49,7 +49,7 @@ public class CategoryServiceTests {
 
         categoryDTO = CategoryDTO.builder()
                 .id(1L)
-                .products(new ArrayList<>())
+                //.products(new ArrayList<>())
                 .name("CategoryTest")
                 .build();
     }

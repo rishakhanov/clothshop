@@ -58,20 +58,20 @@ public class OrderControllerTests {
     @Test
     @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})
     public void givenOrderDTOObject_whenCreateOrder_thenReturnSavedOrder() throws Exception {
-        long orderId = 1L;
+        long userId = 1L;
 
         OrderDTO orderDTO = OrderDTO.builder()
                 .person(null)
-                .productOrders(null)
+                //.productOrders(null)
                 .createdAt(LocalDate.now())
                 .shipDate(null)
                 .status(OrdersStatus.NEW)
                 .build();
 
-        BDDMockito.given(mapStructMapper.orderToOrderDTO(orderService.saveNewOrder(orderId)))
+        BDDMockito.given(mapStructMapper.orderToOrderDTO(orderService.saveNewOrder(userId)))
                 .willReturn(orderDTO);
 
-        ResultActions response = mockMvc.perform(post("/api/orders/users/{id}", orderId)
+        ResultActions response = mockMvc.perform(post("/api/orders/users/{id}", userId)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(orderDTO)));
 
@@ -87,7 +87,7 @@ public class OrderControllerTests {
         long orderId = 1L;
         OrderDTO canceledOrderDTO = OrderDTO.builder()
                 .person(null)
-                .productOrders(null)
+                //.productOrders(null)
                 .createdAt(LocalDate.now())
                 .shipDate(null)
                 .status(OrdersStatus.CANCELED)
@@ -131,14 +131,14 @@ public class OrderControllerTests {
         List<OrderDTO> orderDTOList = new ArrayList<>();
         OrderDTO orderDTO1 = OrderDTO.builder()
                 .person(null)
-                .productOrders(null)
+                //.productOrders(null)
                 .createdAt(LocalDate.now())
                 .shipDate(null)
                 .status(OrdersStatus.NEW)
                 .build();
         OrderDTO orderDTO2 = OrderDTO.builder()
                 .person(null)
-                .productOrders(null)
+                //.productOrders(null)
                 .createdAt(LocalDate.now())
                 .shipDate(null)
                 .status(OrdersStatus.NEW)
@@ -167,7 +167,7 @@ public class OrderControllerTests {
         long orderId = 1L;
         OrderDTO orderDTO = OrderDTO.builder()
                 .person(null)
-                .productOrders(null)
+                //.productOrders(null)
                 .createdAt(LocalDate.now())
                 .shipDate(null)
                 .status(OrdersStatus.NEW)

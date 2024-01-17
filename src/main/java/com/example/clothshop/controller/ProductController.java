@@ -79,6 +79,7 @@ public class ProductController {
     @PostMapping()
     @ResponseStatus(HttpStatus.CREATED)
     public ProductDTO create(@RequestBody @Valid ProductDTO productDTO, BindingResult bindingResult) {
+        System.out.println(productDTO);
         productService.checkForValidationErrors(bindingResult);
         return mapStructMapper.productToProductDTO(productService.saveNewProduct(productDTO));
     }

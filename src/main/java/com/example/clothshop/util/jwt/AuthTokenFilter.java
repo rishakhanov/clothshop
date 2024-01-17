@@ -39,9 +39,8 @@ public class AuthTokenFilter extends OncePerRequestFilter {
 
                 Long id = Long.valueOf(jwtUtils.getUserIdFromJwtToken(jwt));
                 String email = jwtUtils.getUserEmailFromJwtToken(jwt);
-                String password = jwtUtils.getUserPasswordFromJwtToken(jwt);
+                String password = null;// jwtUtils.getUserPasswordFromJwtToken(jwt);
                 List<GrantedAuthority> authorities = jwtUtils.getUserAuthoritiesFromJwtToken(jwt);
-
 
                 //UserDetails userDetails = userDetailsService.loadUserByUsername(username);
                 UserDetails userDetails = new UserDetailsImpl(id, username, email, password, authorities);

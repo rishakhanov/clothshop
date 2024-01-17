@@ -35,6 +35,7 @@ public class Category {
     }
 
     //@JsonBackReference(value = "product-category")
+    //@JsonManagedReference(value = "product-category")
     public List<Product> getProducts() {
         return products;
     }
