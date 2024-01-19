@@ -40,7 +40,8 @@ public class Image {
         return id;
     }
 
-    @JsonManagedReference(value = "product-image")
+    //@JsonManagedReference(value = "product-image")
+    @JsonBackReference(value = "product-image")
     public List<Product> getProducts() {
         return products;
     }

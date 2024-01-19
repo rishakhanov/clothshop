@@ -22,7 +22,8 @@ public class Category {
     @Column(name = "id")
     private Long id;
 
-    //@JsonManagedReference
+    //@JsonManagedReference(value = "product-category")
+    //@JsonIgnore
     @ToString.Exclude
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.ALL)
     private List<Product> products;
@@ -34,7 +35,7 @@ public class Category {
         return id;
     }
 
-    //@JsonBackReference(value = "product-category")
+    @JsonBackReference(value = "product-category")
     //@JsonManagedReference(value = "product-category")
     public List<Product> getProducts() {
         return products;

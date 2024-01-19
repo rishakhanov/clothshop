@@ -1,9 +1,6 @@
 package com.example.clothshop.entity;
 
-import com.fasterxml.jackson.annotation.JsonIdentityInfo;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonManagedReference;
-import com.fasterxml.jackson.annotation.ObjectIdGenerators;
+import com.fasterxml.jackson.annotation.*;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,7 +34,8 @@ public class Vendor {
         return id;
     }
 
-    @JsonManagedReference(value = "product-vendor")
+    //@JsonManagedReference(value = "product-vendor")
+    @JsonBackReference(value = "product-vendor")
     public List<Product> getProducts() {
         return products;
     }

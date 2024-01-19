@@ -14,29 +14,29 @@ import org.hibernate.annotations.FetchMode;
 @Builder
 public class ProductDTO {
 
-    @JsonProperty("id")
+    //@JsonProperty("id")
     private Long id;
 
-    @JsonProperty("category")
+    //@JsonProperty("category")
     private Category category;
-    @JsonProperty("vendor")
+    //@JsonProperty("vendor")
     private Vendor vendor;
-    @JsonProperty("image")
+    //@JsonProperty("image")
     private Image image;
 
-    @JsonProperty("name")
+    //@JsonProperty("name")
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 100, message = "Name should be between 2 and 100 characters")
     private String name;
 
-    @JsonProperty("price")
+    //@JsonProperty("price")
     @Min(value = 0, message = "Price should be greater than or equal to 0")
     private double price;
 
-    @JsonProperty("quantity")
+    //@JsonProperty("quantity")
     @Min(value = 0, message = "Quantity should be greater than or equal to 0")
     private long quantity;
-
+/*
     @JsonCreator
     public ProductDTO(
             @JsonProperty(namespace = "id", required = false) Long id,
@@ -55,7 +55,7 @@ public class ProductDTO {
         this.price = price;
         this.quantity = quantity;
     }
-
+*/
     public Long getId() {
         return id;
     }

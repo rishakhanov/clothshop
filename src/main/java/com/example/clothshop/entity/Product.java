@@ -62,17 +62,17 @@ public class Product {
         return id;
     }
 
-    @JsonBackReference(value = "product-category")
+    //@JsonBackReference(value = "product-category")
     public Category getCategory() {
         return category;
     }
 
-    @JsonBackReference(value = "product-vendor")
+   // @JsonBackReference(value = "product-vendor")
     public Vendor getVendor() {
         return vendor;
     }
 
-    @JsonBackReference(value = "product-image")
+    //@JsonBackReference(value = "product-image")
     public Image getImage() {
         return image;
     }
