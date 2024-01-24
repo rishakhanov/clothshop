@@ -7,6 +7,7 @@ import com.example.clothshop.entity.Person;
 import com.example.clothshop.repository.PersonRepository;
 import com.example.clothshop.util.exception.PersonNotCreatedException;
 import com.example.clothshop.util.exception.PersonNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 public class PersonService {
 

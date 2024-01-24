@@ -11,6 +11,7 @@ import com.example.clothshop.util.exception.*;
 import com.example.clothshop.util.jwt.JwtUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +29,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@Slf4j
 @AllArgsConstructor
 @RequestMapping("/api/users")
 public class PersonController {

@@ -14,6 +14,7 @@ import com.example.clothshop.util.exception.PersonNotCreatedException;
 import com.example.clothshop.util.jwt.JwtUtils;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
 
 @RestController
 @AllArgsConstructor
+@Slf4j
 @RequestMapping("/api/auth")
 public class AuthenticationController {
 

@@ -7,6 +7,7 @@ import com.example.clothshop.entity.Product;
 import com.example.clothshop.repository.ProductRepository;
 import com.example.clothshop.util.exception.ProductNotCreatedException;
 import com.example.clothshop.util.exception.ProductNotFoundException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.BindingResult;
@@ -16,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@Slf4j
 @Transactional(readOnly = true)
 public class ProductService {
 

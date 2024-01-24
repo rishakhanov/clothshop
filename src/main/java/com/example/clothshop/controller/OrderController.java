@@ -10,6 +10,7 @@ import com.example.clothshop.service.UserDetailsImpl;
 import com.example.clothshop.util.exception.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -21,6 +22,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
+@Slf4j
 @AllArgsConstructor
 @RequestMapping("/api/orders")
 public class OrderController {

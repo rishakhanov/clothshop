@@ -82,7 +82,6 @@ public class ProductController {
         productService.checkForValidationErrors(bindingResult);
         ProductDTO productDTO1 = mapStructMapper.productToProductDTO(productService.saveNewProduct(productDTO));
         //return mapStructMapper.productToProductDTO(productService.saveNewProduct(productDTO));
-        //System.out.println(productDTO1);
         return productDTO1;
     }
 
