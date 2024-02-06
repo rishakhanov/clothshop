@@ -32,4 +32,9 @@ public interface MapStructMapper {
     Person personUpdateDTOToPerson(PersonUpdateDTO personUpdateDTO);
 
     PersonOrdersDTO orderToPersonOrdersDTO(Orders order);
+
+    DiscountDTO discountToDiscountDTO(Discount discount);
+
+    Discount discountDTOToDiscount(DiscountDTO discountDTO);
+
 }

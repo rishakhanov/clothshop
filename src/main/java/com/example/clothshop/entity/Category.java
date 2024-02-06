@@ -28,6 +28,9 @@ public class Category {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "category", cascade = CascadeType.ALL)
     private List<Product> products;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Discount discount;
+
     @Column(name = "name")
     private String name;
 
@@ -43,5 +46,9 @@ public class Category {
 
     public String getName() {
         return name;
+    }
+
+    public Discount getDiscount() {
+        return discount;
     }
 }

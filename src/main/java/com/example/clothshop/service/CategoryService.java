@@ -3,6 +3,7 @@ package com.example.clothshop.service;
 import com.example.clothshop.dto.CategoryDTO;
 import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.entity.Category;
+import com.example.clothshop.entity.Discount;
 import com.example.clothshop.entity.Product;
 import com.example.clothshop.repository.CategoryRepository;
 import com.example.clothshop.util.exception.CategoryNotCreatedException;
@@ -24,10 +25,12 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final MapStructMapper mapStructMapper;
+    private final DiscountService discountService;
 
-    public CategoryService(CategoryRepository categoryRepository, MapStructMapper mapStructMapper) {
+    public CategoryService(CategoryRepository categoryRepository, MapStructMapper mapStructMapper, DiscountService discountService) {
         this.categoryRepository = categoryRepository;
         this.mapStructMapper = mapStructMapper;
+        this.discountService = discountService;
     }
 
     public List<Category> getCategories() {
@@ -71,6 +74,9 @@ public class CategoryService {
             throw new CategoryNotCreatedException("The category already exists.");
         } else {
             Category category = mapStructMapper.categoryDTOToCategory(categoryDTO);
+            long discountIdWith_0_DefaultValue = 1;
+            Discount discount = discountService.getDiscountById(discountIdWith_0_DefaultValue);
+            category.setDiscount(discount);
             //category.setProducts(new ArrayList<>());
             return categoryRepository.save(category);
         }
@@ -93,4 +99,19 @@ public class CategoryService {
         categoryRepository.save(category);
         return category;
     }
+
+    @Transactional
+    public Category changeDiscount(long categoryId, long discountId) {
+        Discount discount = discountService.getDiscountById(discountId);
+        Optional<Category> category = categoryRepository.findById(categoryId);
+        if (category.isPresent()) {
+            category.get().setDiscount(discount);
+        } else {
+            throw new CategoryNotFoundException();
+        }
+        return category.get();
+    }
+
+
+
 }

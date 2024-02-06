@@ -1,9 +1,7 @@
 package com.example.clothshop.controller;
 
 import com.example.clothshop.dto.*;
-import com.example.clothshop.entity.Orders;
-import com.example.clothshop.entity.Person;
-import com.example.clothshop.entity.Roles;
+import com.example.clothshop.entity.*;
 import com.example.clothshop.service.PersonService;
 import com.example.clothshop.service.RolesService;
 import com.example.clothshop.service.UserDetailsImpl;
@@ -70,6 +68,18 @@ public class PersonController {
                             BindingResult bindingResult) {
         personService.checkForValidationErrors(bindingResult);
         return mapStructMapper.personToPersonDTO(personService.updatePerson(personUpdateDTO, id));
+    }
+
+    @PostMapping("/{pid}/discount/{did}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String addDiscount(@PathVariable("pid") long personId, @PathVariable("did") long discountId) {
+        return personService.addDiscount(personId, discountId);
+    }
+
+    @PostMapping("/{pid}/discount/{did}/delete")
+    @PreAuthorize("hasRole('ADMIN')")
+    public String deleteDiscount(@PathVariable("pid") long personId, @PathVariable("did") long discountId) {
+        return personService.deleteDiscount(personId, discountId);
     }
 
     @ExceptionHandler

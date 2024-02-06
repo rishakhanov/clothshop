@@ -1,5 +1,6 @@
 package com.example.clothshop.dto;
 
+import com.example.clothshop.entity.Discount;
 import com.example.clothshop.entity.Product;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
@@ -16,6 +17,9 @@ import java.util.List;
 public class CategoryDTO {
 
     private Long id;
+
+    //private Discount discount;
+
     //private List<Product> products;
     @NotEmpty(message = "Name should not be empty")
     @Size(min = 2, max = 100, message = "Name should be between 2 and 100 characters")
@@ -34,5 +38,8 @@ public class CategoryDTO {
         return name;
     }
 
-
+//    @JsonBackReference(value = "category-discount")
+//    public Discount getDiscount() {
+//        return discount;
+//    }
 }

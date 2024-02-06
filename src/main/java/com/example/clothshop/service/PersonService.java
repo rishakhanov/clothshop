@@ -2,8 +2,10 @@ package com.example.clothshop.service;
 
 import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.dto.PersonUpdateDTO;
-import com.example.clothshop.entity.Orders;
+import com.example.clothshop.entity.Discount;
 import com.example.clothshop.entity.Person;
+import com.example.clothshop.entity.PersonDiscount;
+import com.example.clothshop.repository.PersonDiscountRepository;
 import com.example.clothshop.repository.PersonRepository;
 import com.example.clothshop.util.exception.PersonNotCreatedException;
 import com.example.clothshop.util.exception.PersonNotFoundException;
@@ -25,11 +27,15 @@ public class PersonService {
     private final PersonRepository personRepository;
     private final MapStructMapper mapStructMapper;
     private final PasswordEncoder passwordEncoder;
+    private final DiscountService discountService;
+    private final PersonDiscountRepository personDiscountRepository;
 
-    public PersonService(PersonRepository personRepository, MapStructMapper mapStructMapper, PasswordEncoder passwordEncoder) {
+    public PersonService(PersonRepository personRepository, MapStructMapper mapStructMapper, PasswordEncoder passwordEncoder, DiscountService discountService, PersonDiscountRepository personDiscountRepository) {
         this.personRepository = personRepository;
         this.mapStructMapper = mapStructMapper;
         this.passwordEncoder = passwordEncoder;
+        this.discountService = discountService;
+        this.personDiscountRepository = personDiscountRepository;
     }
 
     public Person getPersonById(long id) {
@@ -100,6 +106,51 @@ public class PersonService {
         } else {
             throw new PersonNotFoundException();
         }
+    }
+
+    @Transactional
+    public String addDiscount(long personId, long discountId) {
+        Discount discount = discountService.getDiscountById(discountId);
+        Optional<Person> personSaved = personRepository.findById(personId);
+        if (personSaved.isEmpty()) {
+            throw new PersonNotFoundException();
+        }
+
+        Optional<PersonDiscount> personDiscountSaved = Optional.ofNullable(personDiscountRepository
+                .findPersonDiscountByPersonAndDiscount(personId, discountId));
+        if (personDiscountSaved.isPresent()) {
+            return "The discount was already assigned to the customer.";
+        }
+
+//        Optional<List<PersonDiscount>> personDiscountList =
+//                Optional.ofNullable(personDiscountRepository.findPersonDiscountsByPersonId(personId));
+//        if (personDiscountList.isPresent()) {
+//
+//        }
+
+        PersonDiscount personDiscount = PersonDiscount.builder()
+                .person(personSaved.get())
+                .discount(discount)
+                .build();
+        personDiscountRepository.save(personDiscount);
+        return "The " + discount.getValue()*100 + "% discount was assigned to the person with id = " + personSaved.get().getId();
+    }
+
+    @Transactional
+    public String deleteDiscount(long personId, long discountId) {
+        Discount discount = discountService.getDiscountById(discountId);
+        Optional<Person> personSaved = personRepository.findById(personId);
+        if (personSaved.isEmpty()) {
+            throw new PersonNotFoundException();
+        }
+
+        Optional<PersonDiscount> personDiscountSaved = Optional.ofNullable(personDiscountRepository
+                .findPersonDiscountByPersonAndDiscount(personId, discountId));
+        if (personDiscountSaved.isPresent()) {
+            personDiscountRepository.delete(personDiscountSaved.get());
+            return "The " + discount.getValue()*100 + "% discount assigned to the person with id = " + personSaved.get().getId() + " was deleted.";
+        }
+        return "The " + discount.getValue()*100 + "% discount wasn't assigned to the person with id = " + personSaved.get().getId() + " and wasn't deleted.";
     }
 
 }

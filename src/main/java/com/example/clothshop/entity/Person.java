@@ -35,6 +35,10 @@ public class Person {
     )
     private List<Roles> rolesList;
 
+    @ToString.Exclude
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "person")
+    private List<PersonDiscount> personDiscounts;
+
     @Column(name = "username")
     private String username;
 
@@ -90,5 +94,10 @@ public class Person {
     //@JsonManagedReference(value = "person-roles")
     public List<Roles> getRolesList() {
         return rolesList;
+    }
+
+    //@JsonManagedReference(value = )
+    public List<PersonDiscount> getPersonDiscounts() {
+        return personDiscounts;
     }
 }
