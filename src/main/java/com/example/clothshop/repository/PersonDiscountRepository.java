@@ -16,9 +16,9 @@ public interface PersonDiscountRepository extends JpaRepository<PersonDiscount, 
             @Param("personId") long personId, @Param("discountId") long discountId);
 
 
-//    @Query(value = "SELECT * FROM person_discount pd WHERE pd.person_id = :personId",
-//            nativeQuery = true)
-//    List<PersonDiscount> findPersonDiscountsByPersonId(@Param("personId") long personId);
+    @Query(value = "SELECT * FROM person_discount pd WHERE pd.person_id = :personId",
+            nativeQuery = true)
+    List<PersonDiscount> findPersonDiscountsByPersonId(@Param("personId") long personId);
 
 
 }

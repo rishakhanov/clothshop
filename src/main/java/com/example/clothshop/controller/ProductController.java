@@ -2,10 +2,12 @@ package com.example.clothshop.controller;
 
 import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.dto.ProductDTO;
+import com.example.clothshop.dto.ProductDiscountDTO;
 import com.example.clothshop.entity.Image;
 import com.example.clothshop.entity.Product;
 import com.example.clothshop.service.ImageService;
 import com.example.clothshop.service.ProductService;
+import com.example.clothshop.service.UserDetailsImpl;
 import com.example.clothshop.util.exception.*;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
@@ -16,7 +18,9 @@ import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -97,6 +101,26 @@ public class ProductController {
     public String delete(@PathVariable("id") long id) {
         productService.deleteProduct(id);
         return "Product with ID = " + id + " was deleted.";
+    }
+
+/*
+    @GetMapping("/category/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public List<ProductDiscountDTO> getProductsByCategory(@PathVariable("id") long categoryId,
+                                                          Authentication authentication) {
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        Long personId = userPrincipal.getId();
+        return productService.getProductsByCategory(categoryId, personId);
+    }
+*/
+
+    @GetMapping("/category/{id}")
+    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
+    public List<ProductDiscountDTO> getProductsByCategory(@PathVariable("id") long categoryId,
+                                                          Authentication authentication) {
+        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
+        Long personId = userPrincipal.getId();
+        return productService.getProductsByCategory(categoryId, personId);
     }
 
     @ExceptionHandler

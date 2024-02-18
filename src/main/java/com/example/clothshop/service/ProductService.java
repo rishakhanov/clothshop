@@ -1,9 +1,14 @@
 package com.example.clothshop.service;
 
+import com.example.clothshop.dao.ProductDAOImpl;
 import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.dto.ProductDTO;
+import com.example.clothshop.dto.ProductDiscountDTO;
+import com.example.clothshop.entity.Category;
 import com.example.clothshop.entity.Image;
+import com.example.clothshop.entity.PersonDiscount;
 import com.example.clothshop.entity.Product;
+import com.example.clothshop.repository.PersonDiscountRepository;
 import com.example.clothshop.repository.ProductRepository;
 import com.example.clothshop.util.exception.ProductNotCreatedException;
 import com.example.clothshop.util.exception.ProductNotFoundException;
@@ -15,6 +20,7 @@ import org.springframework.validation.FieldError;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -23,9 +29,16 @@ public class ProductService {
 
     private final ProductRepository productRepository;
     private MapStructMapper mapStructMapper;
-    public ProductService(ProductRepository productRepository, MapStructMapper mapStructMapper) {
+    private final PersonDiscountRepository personDiscountRepository;
+    private final ProductDAOImpl productDAOImpl;
+    private final CategoryService categoryService;
+
+    public ProductService(ProductRepository productRepository, MapStructMapper mapStructMapper, PersonDiscountRepository personDiscountRepository, ProductDAOImpl productDAO, ProductDAOImpl productDAOimpl, ProductDAOImpl productDAOImpl, CategoryService categoryService) {
         this.productRepository = productRepository;
         this.mapStructMapper = mapStructMapper;
+        this.personDiscountRepository = personDiscountRepository;
+        this.productDAOImpl = productDAOImpl;
+        this.categoryService = categoryService;
     }
 
     public List<Product> getProducts() {
@@ -98,5 +111,35 @@ public class ProductService {
     public Product saveProduct(Product product) {
         return productRepository.save(product);
     }
+
+    public List<ProductDiscountDTO> getProductsByCategory(long categoryId, long personId) {
+        List<PersonDiscount> personDiscountList = personDiscountRepository.findPersonDiscountsByPersonId(personId);
+        if (personDiscountList.isEmpty()) {
+            return getProductsByCategoryWithoutDiscounts(categoryId);
+        } else {
+            Category category = categoryService.getCategoryById(categoryId);
+            Long discountId = category.getDiscount().getId();
+            boolean discountExists = false;
+            for(PersonDiscount personDiscount : personDiscountList) {
+                if (personDiscount.getDiscount().getId().equals(discountId)) {
+                    discountExists = true;
+                }
+            }
+            return getProductsWithDiscounts(discountExists, categoryId);
+        }
+    }
+
+    private List<ProductDiscountDTO> getProductsByCategoryWithoutDiscounts(long categoryId) {
+        return getProducts()
+                .stream()
+                .filter(p -> p.getCategory().getId().equals(categoryId))
+                .map(e -> mapStructMapper.productToProductDiscountDTO(e))
+                .collect(Collectors.toList());
+    }
+
+    private List<ProductDiscountDTO> getProductsWithDiscounts(boolean discountExists , long categoryId) {
+        return productDAOImpl.getProductsByCategoryWithPersonDiscounts(discountExists, categoryId);
+    }
+
 
 }

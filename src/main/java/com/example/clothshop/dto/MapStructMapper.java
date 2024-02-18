@@ -37,4 +37,6 @@ public interface MapStructMapper {
 
     Discount discountDTOToDiscount(DiscountDTO discountDTO);
 
+    ProductDiscountDTO productToProductDiscountDTO(Product product);
+
 }

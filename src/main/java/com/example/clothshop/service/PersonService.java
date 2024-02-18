@@ -122,12 +122,6 @@ public class PersonService {
             return "The discount was already assigned to the customer.";
         }
 
-//        Optional<List<PersonDiscount>> personDiscountList =
-//                Optional.ofNullable(personDiscountRepository.findPersonDiscountsByPersonId(personId));
-//        if (personDiscountList.isPresent()) {
-//
-//        }
-
         PersonDiscount personDiscount = PersonDiscount.builder()
                 .person(personSaved.get())
                 .discount(discount)

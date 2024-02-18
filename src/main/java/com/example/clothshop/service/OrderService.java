@@ -1,8 +1,10 @@
 package com.example.clothshop.service;
 
 import com.example.clothshop.dto.MapStructMapper;
+import com.example.clothshop.dto.ProductDiscountDTO;
 import com.example.clothshop.entity.*;
 import com.example.clothshop.repository.OrderRepository;
+import com.example.clothshop.repository.PersonDiscountRepository;
 import com.example.clothshop.repository.ProductOrdersRepository;
 import com.example.clothshop.util.exception.*;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +17,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -25,14 +28,19 @@ public class OrderService {
     private final PersonService personService;
     private final ProductOrdersRepository productOrdersRepository;
     private final ProductService productService;
+    private final PersonDiscountRepository personDiscountRepository;
+    private final MapStructMapper mapStructMapper;
+
 
 
     public OrderService(OrderRepository orderRepository, PersonService personService,
-                        ProductOrdersRepository productOrdersRepository, ProductService productService) {
+                        ProductOrdersRepository productOrdersRepository, ProductService productService, PersonDiscountRepository personDiscountRepository, MapStructMapper mapStructMapper) {
         this.orderRepository = orderRepository;
         this.personService = personService;
         this.productOrdersRepository = productOrdersRepository;
         this.productService = productService;
+        this.personDiscountRepository = personDiscountRepository;
+        this.mapStructMapper = mapStructMapper;
     }
 
     public List<Orders> getOrders() {
@@ -248,6 +256,29 @@ public class OrderService {
             }
         }
     }
+
+    public List<ProductDiscountDTO> getProducts(Long personId) {//delete
+        List<PersonDiscount> personDiscountList = personDiscountRepository.findPersonDiscountsByPersonId(personId);
+        if (personDiscountList.isEmpty()) {
+            return getProductsWithoutDiscounts();
+        } else {
+                return getProductsWithDiscounts(personId, personDiscountList);
+        }
+    }
+
+    private List<ProductDiscountDTO> getProductsWithoutDiscounts() {//delete
+        return productService
+                .getProducts()
+                .stream()
+                .map(e -> mapStructMapper.productToProductDiscountDTO(e))
+                .collect(Collectors.toList());
+    }
+
+    private List<ProductDiscountDTO> getProductsWithDiscounts(Long personId, List<PersonDiscount> personDiscountList) {//delete
+    return null;
+
+    }
+
 
 
 }
