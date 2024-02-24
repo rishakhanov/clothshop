@@ -114,19 +114,16 @@ public class ProductService {
 
     public List<ProductDiscountDTO> getProductsByCategory(long categoryId, long personId) {
         List<PersonDiscount> personDiscountList = personDiscountRepository.findPersonDiscountsByPersonId(personId);
-        if (personDiscountList.isEmpty()) {
-            return getProductsByCategoryWithoutDiscounts(categoryId);
-        } else {
+        if (!personDiscountList.isEmpty()) {
             Category category = categoryService.getCategoryById(categoryId);
             Long discountId = category.getDiscount().getId();
-            boolean discountExists = false;
             for(PersonDiscount personDiscount : personDiscountList) {
                 if (personDiscount.getDiscount().getId().equals(discountId)) {
-                    discountExists = true;
+                    return productDAOImpl.getProductsByCategoryWithPersonDiscounts(categoryId);
                 }
             }
-            return getProductsWithDiscounts(discountExists, categoryId);
         }
+        return getProductsByCategoryWithoutDiscounts(categoryId);
     }
 
     private List<ProductDiscountDTO> getProductsByCategoryWithoutDiscounts(long categoryId) {
@@ -134,12 +131,13 @@ public class ProductService {
                 .stream()
                 .filter(p -> p.getCategory().getId().equals(categoryId))
                 .map(e -> mapStructMapper.productToProductDiscountDTO(e))
+                .peek(e -> e.setDiscountedPrice(e.getPrice()))
                 .collect(Collectors.toList());
     }
 
-    private List<ProductDiscountDTO> getProductsWithDiscounts(boolean discountExists , long categoryId) {
-        return productDAOImpl.getProductsByCategoryWithPersonDiscounts(discountExists, categoryId);
-    }
+//    private List<ProductDiscountDTO> getProductsWithDiscounts(boolean discountExists , long categoryId) {
+//        return productDAOImpl.getProductsByCategoryWithPersonDiscounts(discountExists, categoryId);
+//    }
 
 
 }

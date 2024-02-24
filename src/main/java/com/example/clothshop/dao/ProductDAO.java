@@ -7,6 +7,6 @@ import java.util.List;
 
 public interface ProductDAO {
 
-    List<ProductDiscountDTO> getProductsByCategoryWithPersonDiscounts(boolean discountExists, long categoryId);
+    List<ProductDiscountDTO> getProductsByCategoryWithPersonDiscounts(long categoryId);
 
 }

@@ -1,6 +1,7 @@
 package com.example.clothshop.repository;
 
 import com.example.clothshop.entity.Category;
+import com.example.clothshop.entity.Discount;
 import com.example.clothshop.entity.Product;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,16 +21,20 @@ public class CategoryRepositoryTests {
 
     @Autowired
     private CategoryRepository categoryRepository;
+    @Autowired
+    private DiscountRepository discountRepository;
 
     private Category category;
 
     @BeforeEach
     public void setup() {
         List<Product> productList = new ArrayList<>();
+        Optional<Discount> discount = discountRepository.findById(1L);
 
         category = Category.builder()
                 .name("CategoryTest")
                 .products(productList)
+                .discount(discount.get())
                 .build();
     }
 

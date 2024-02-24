@@ -94,8 +94,10 @@ public class CategoryService {
 
     @Transactional
     public Category updateCategory(CategoryDTO categoryDTO, long id) {
+        Category categorySaved = getCategoryById(id);
         Category category = mapStructMapper.categoryDTOToCategory(categoryDTO);
         category.setId(id);
+        category.setDiscount(categorySaved.getDiscount());
         categoryRepository.save(category);
         return category;
     }

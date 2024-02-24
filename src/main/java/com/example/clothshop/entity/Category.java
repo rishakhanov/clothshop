@@ -48,6 +48,8 @@ public class Category {
         return name;
     }
 
+    //@JsonManagedReference(value = "category-discount")
+    @JsonBackReference(value = "category-discount")
     public Discount getDiscount() {
         return discount;
     }

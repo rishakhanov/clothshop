@@ -3,6 +3,7 @@ package com.example.clothshop.service;
 import com.example.clothshop.dto.CategoryDTO;
 import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.entity.Category;
+import com.example.clothshop.entity.Discount;
 import com.example.clothshop.repository.CategoryRepository;
 import com.example.clothshop.util.exception.CategoryNotCreatedException;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,7 +19,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willDoNothing;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,12 +34,17 @@ public class CategoryServiceTests {
     @Mock
     private MapStructMapper mapStructMapper;
 
+    @Mock
+    private DiscountService discountService;
+
     @InjectMocks
     private CategoryService categoryService;
 
     private Category category;
 
     private CategoryDTO categoryDTO;
+
+    private Discount discount;
 
     @BeforeEach
     public void setup() {
@@ -45,12 +53,23 @@ public class CategoryServiceTests {
                 .id(1L)
                 .products(new ArrayList<>())
                 .name("CategoryTest")
+                .discount(discount)
                 .build();
 
         categoryDTO = CategoryDTO.builder()
                 .id(1L)
                 //.products(new ArrayList<>())
                 .name("CategoryTest")
+                .build();
+
+        discount = Discount.builder()
+                .id(1L)
+                .categories(null)
+                .personDiscounts(null)
+                .name("DiscountTest")
+                .value(0)
+                .startDate(LocalDate.of(2023, 1, 1))
+                .endDate(LocalDate.of(2024, 1, 1))
                 .build();
     }
 
@@ -59,6 +78,8 @@ public class CategoryServiceTests {
         given(categoryRepository.findByName(categoryDTO.getName())).willReturn(Optional.empty());
         given(mapStructMapper.categoryDTOToCategory(categoryDTO)).willReturn(category);
         given(categoryRepository.save(category)).willReturn(category);
+        long discountIdWith_0_DefaultValue = 1;
+        given(discountService.getDiscountById(discountIdWith_0_DefaultValue)).willReturn(discount);
 
         Category savedCategory = categoryService.saveNewCategory(categoryDTO);
 
@@ -104,6 +125,7 @@ public class CategoryServiceTests {
     @Test
     public void givenCategoryDTOObject_whenUpdateCategory_thenReturnUpdatedCategory() {
         given(mapStructMapper.categoryDTOToCategory(categoryDTO)).willReturn(category);
+        given(categoryRepository.findById(1L)).willReturn(Optional.ofNullable(category));
         given(categoryRepository.save(category)).willReturn(category);
         category.setName("UpdatedCategoryName");
 

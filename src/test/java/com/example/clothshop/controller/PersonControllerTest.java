@@ -72,7 +72,7 @@ public class PersonControllerTest {
                 .email("email@gmail.com")
                 .password("PasswordTestUpdate")
                 .phone("1-22-333")
-                .orders(null)
+                //.orders(null)
                 .build();
 
         BDDMockito.given(mapStructMapper.personToPersonDTO(personService.updatePerson(updatedPersonDTO, personId)))
@@ -123,7 +123,7 @@ public class PersonControllerTest {
                 .email("email1@gmail.com")
                 .password("PasswordTest1")
                 .phone("1-11-111")
-                .orders(null)
+                //.orders(null)
                 .build();
         PersonDTO personDTO2 = PersonDTO.builder()
                 .username("UsernameTest2")
@@ -132,7 +132,7 @@ public class PersonControllerTest {
                 .email("email2@gmail.com")
                 .password("PasswordTest2")
                 .phone("2-22-222")
-                .orders(null)
+                //.orders(null)
                 .build();
         personDTOList.add(personDTO1);
         personDTOList.add(personDTO2);
@@ -162,7 +162,7 @@ public class PersonControllerTest {
                 .email("EmailTest")
                 .password("PasswordTest")
                 .phone("PhoneTest")
-                .orders(null)
+                //.orders(null)
                 .build();
 
         BDDMockito.given(mapStructMapper.personToPersonDTO(personService.getPersonById(personId)))
@@ -185,7 +185,7 @@ public class PersonControllerTest {
                 .email("EmailTest")
                 .password("PasswordTest")
                 .phone("PhoneTest")
-                .orders(null)
+                //.orders(null)
                 .build();
 
         BDDMockito.given(mapStructMapper.personToPersonDTO(personService.findByUsername(personUsername)))

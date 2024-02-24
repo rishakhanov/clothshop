@@ -1,6 +1,7 @@
 package com.example.clothshop.entity;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
@@ -55,7 +56,7 @@ public class Discount {
         return id;
     }
 
-    //@JsonBackReference(value = "category-discount")
+   //@JsonManagedReference(value = "category-discount")//new
     public List<Category> getCategories() {
         return categories;
     }
@@ -80,6 +81,7 @@ public class Discount {
         return valid;
     }
 
+    //@JsonBackReference(value = "discount-personDiscount")//new
     public List<PersonDiscount> getPersonDiscounts() {
         return personDiscounts;
     }

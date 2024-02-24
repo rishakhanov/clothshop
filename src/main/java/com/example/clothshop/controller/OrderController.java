@@ -176,16 +176,6 @@ public class OrderController {
         return mapStructMapper.orderToOrderDTO(orderService.shipOrder(id));
     }
 
-    @GetMapping("/products")//delete
-    @PreAuthorize("hasRole('USER') or hasRole('ADMIN')")
-    public List<ProductDiscountDTO> getProductsWithDiscounts(Authentication authentication) {
-        UserDetailsImpl userPrincipal = (UserDetailsImpl) authentication.getPrincipal();
-        Long id = userPrincipal.getId();
-        return orderService.getProducts(id);
-    }
-
-
-
     private OrderDTO convertToOrderDTO(Orders order) {
         return mapStructMapper.orderToOrderDTO(order);
     }
