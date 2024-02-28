@@ -58,7 +58,6 @@ public class DiscountService {
     @Transactional
     public Discount saveNewDiscount(DiscountDTO discountDTO) {
         Optional<Discount> foundDiscount = discountRepository.findByName(discountDTO.getName());
-
         if (foundDiscount.isPresent()) {
             throw new DiscountNotCreatedException("The discount already exists.");
         } else {

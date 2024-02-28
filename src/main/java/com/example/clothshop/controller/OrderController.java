@@ -87,9 +87,9 @@ public class OrderController {
 
         Product product = productService.getProductById(orderProductDTO.getId());
         productService.checkForValidationErrors(bindingResult);
-        orderService.addProductToOrder(id, product, orderProductDTO.getQuantity());
+        double discountedPrice = orderService.addProductToOrder(id, product, orderProductDTO.getQuantity(), personId);
 
-        orderProductDTO.setPrice(product.getPrice());
+        orderProductDTO.setPrice(discountedPrice);
         orderProductDTO.setName(product.getName());
         return orderProductDTO;
     }

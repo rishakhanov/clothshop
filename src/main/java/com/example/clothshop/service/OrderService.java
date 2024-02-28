@@ -77,15 +77,18 @@ public class OrderService {
     }
 
     @Transactional
-    public Product addProductToOrder(long orderId, Product product, long quantity) {
+    public double addProductToOrder(long orderId, Product product, long quantity, Long personId) {
         Orders order = getOrderById(orderId);
         List<ProductOrders> productOrders = order.getProductOrders();
+        double discountedPrice = calculateDiscountedPrice(product, personId);
+
         for (ProductOrders item : productOrders) {
             if (item.getProduct().getId().equals(product.getId())) {
                 item.setQuantity(quantity);
+                item.setDiscountedPrice(discountedPrice);
                 order.setProductOrders(productOrders);
                 orderRepository.save(order);
-                return product;
+                return discountedPrice;
             }
         }
 
@@ -93,11 +96,32 @@ public class OrderService {
         productOrdersNew.setOrders(order);
         productOrdersNew.setProduct(product);
         productOrdersNew.setQuantity(quantity);
+        productOrdersNew.setDiscountedPrice(discountedPrice);
         productOrders.add(productOrdersNew);
         order.setProductOrders(productOrders);
         orderRepository.save(order);
-        return product;
+        return discountedPrice;
     }
+
+    private double calculateDiscountedPrice(Product product, Long personId) {
+        List<PersonDiscount> personDiscountList = personDiscountRepository.findPersonDiscountsByPersonId(personId);
+        if (!personDiscountList.isEmpty()) {
+            Category category = product.getCategory();
+            Discount discount = category.getDiscount();
+            LocalDate today = LocalDate.now();
+            if (today.isBefore(discount.getStartDate()) || today.isAfter(discount.getEndDate())) {
+                return product.getPrice();
+            }
+            Long discountId = discount.getId();
+            for (PersonDiscount personDiscount : personDiscountList) {
+                if (personDiscount.getDiscount().getId().equals(discountId)) {
+                    return product.getPrice() - product.getPrice() * discount.getValue();
+                }
+            }
+        }
+        return product.getPrice();
+    }
+
 
     @Transactional
     public void deleteOrder(long id) {

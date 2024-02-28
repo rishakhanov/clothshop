@@ -32,6 +32,10 @@ public class ProductOrders {
     @Min(value = 1, message = "Quantity should be greater than or equal to 1")
     private long quantity;
 
+    @Column(name = "discounted_price")
+    @Min(value = 0, message = "Discounted price should be greater than or equal to 0")
+    private double  discountedPrice;
+
     public Long getId() {
         return id;
     }
@@ -48,5 +52,9 @@ public class ProductOrders {
 
     public long getQuantity() {
         return quantity;
+    }
+
+    public double getDiscountedPrice() {
+        return discountedPrice;
     }
 }

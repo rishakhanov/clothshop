@@ -4,11 +4,13 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
+import lombok.Builder;
 import lombok.Setter;
 
 import java.time.LocalDate;
 
 @Setter
+@Builder
 public class DiscountDTO {
 
     private Long id;
