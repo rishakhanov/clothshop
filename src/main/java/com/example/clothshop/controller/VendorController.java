@@ -68,15 +68,16 @@ public class VendorController {
         return "Vendor with ID = " + id + " was deleted.";
     }
 
-    @ExceptionHandler
-    private ResponseEntity<VendorErrorResponse> handleVendorNotFoundException(VendorNotFoundException exception) {
-        VendorErrorResponse response = new VendorErrorResponse("Vendor with this id wasn't found!");
-        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
-    }
+//    @ExceptionHandler
+//    private ResponseEntity<VendorErrorResponse> handleVendorNotFoundException(VendorNotFoundException exception) {
+//        VendorErrorResponse response = new VendorErrorResponse("Vendor with this id wasn't found!");
+//        return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
+//    }
 
-    @ExceptionHandler
-    private ResponseEntity<VendorErrorResponse> handleVendorNotCreatedException(VendorNotCreatedException exception) {
-        VendorErrorResponse response = new VendorErrorResponse(exception.getMessage());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
-    }
+//    @ExceptionHandler
+//    private ResponseEntity<VendorErrorResponse> handleVendorNotCreatedException(VendorNotCreatedException exception) {
+//        VendorErrorResponse response = new VendorErrorResponse(exception.getMessage());
+//        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+//    }
+
 }

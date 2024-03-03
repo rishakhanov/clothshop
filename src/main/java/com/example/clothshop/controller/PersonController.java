@@ -82,6 +82,7 @@ public class PersonController {
         return personService.deleteDiscount(personId, discountId);
     }
 
+    /*
     @ExceptionHandler
     private ResponseEntity<PersonErrorResponse> handlePersonNotFoundException(PersonNotFoundException exception) {
         PersonErrorResponse response = new PersonErrorResponse("User with this id wasn't found!");
@@ -99,6 +100,6 @@ public class PersonController {
         RoleErrorResponse response = new RoleErrorResponse("Role wasn't found!");
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
-
+*/
 
 }

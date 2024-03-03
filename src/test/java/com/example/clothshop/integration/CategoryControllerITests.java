@@ -1,9 +1,12 @@
 package com.example.clothshop.integration;
 
 import com.example.clothshop.dto.CategoryDTO;
+import com.example.clothshop.dto.DiscountDTO;
 import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.entity.Category;
+import com.example.clothshop.entity.Discount;
 import com.example.clothshop.repository.CategoryRepository;
+import com.example.clothshop.repository.DiscountRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.jayway.jsonpath.JsonPath;
 import org.hamcrest.CoreMatchers;
@@ -20,6 +23,7 @@ import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,6 +43,9 @@ public class CategoryControllerITests {
     private CategoryRepository categoryRepository;
 
     @Autowired
+    private DiscountRepository discountRepository;
+
+    @Autowired
     private ObjectMapper objectMapper;
 
     @Test
@@ -46,6 +53,17 @@ public class CategoryControllerITests {
         int repositorySize = (int) categoryRepository.count();
 
         ResultActions response = mockMvc.perform(get("/api/categories"));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", CoreMatchers.is(repositorySize)));
+    }
+
+    @Test
+    public void givenListOfDiscounts_whenGetAllDiscounts_thenReturnDiscountsList() throws Exception {
+        int repositorySize = (int) discountRepository.count();
+
+        ResultActions response = mockMvc.perform(get("/api/categories/discounts"));
 
         response.andExpect(MockMvcResultMatchers.status().isOk())
                 .andDo(MockMvcResultHandlers.print())
@@ -62,6 +80,19 @@ public class CategoryControllerITests {
         response.andDo(print())
                 .andExpect(jsonPath("$.name", CoreMatchers.is(category.getName())));
     }
+
+    @Test
+    public void givenDiscountId_whenGetDiscountById_thenReturnDiscountObject() throws Exception {
+        long discountId = 1L;
+        Discount discount = discountRepository.findById(discountId).get();
+
+        ResultActions response = mockMvc.perform(get("/api/categories/discounts/{id}", discountId));
+
+        response.andDo(print())
+                .andExpect(jsonPath("$.name", CoreMatchers.is(discount.getName())));
+    }
+
+
 
     @Test
     public void givenCategoryDTOObject_whenCreateCategory_thenReturnSavedCategory() throws Exception {
@@ -82,6 +113,30 @@ public class CategoryControllerITests {
         Long id = Long.parseLong(JsonPath.parse(content).read("$.id").toString());
         categoryRepository.deleteById(id);
 
+    }
+
+    @Test
+    public void givenDiscountDTOObject_whenCreateDiscount_thenReturnSavedDiscount() throws Exception {
+        //create discount and check expectations
+        DiscountDTO discountDTO = DiscountDTO.builder()
+                .name("DiscountTest")
+                .value(0)
+                .startDate(LocalDate.parse("2024-01-01"))
+                .endDate(LocalDate.parse("2025-01-01"))
+                .valid(true)
+                .build();
+
+        MvcResult result = mockMvc.perform(post("/api/categories/discounts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(discountDTO)))
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(jsonPath("$.name", CoreMatchers.is(discountDTO.getName())))
+                .andReturn();
+
+        //delete created discount
+        String content = result.getResponse().getContentAsString();
+        Long id = Long.parseLong(JsonPath.parse(content).read("$.id").toString());
+        discountRepository.deleteById(id);
     }
 
     @Test
@@ -132,6 +187,32 @@ public class CategoryControllerITests {
 
         //delete category by id and check expectations
         ResultActions response = mockMvc.perform(delete("/api/categories/{id}", id));
+
+        response.andExpect(status().isOk())
+                .andDo(print());
+    }
+
+    @Test
+    public void givenDiscountId_whenDeleteDiscount_thenReturn200() throws Exception {
+        //create discount and get id
+        DiscountDTO discountDTO = DiscountDTO.builder()
+                .name("DiscountTest")
+                .value(0)
+                .startDate(LocalDate.parse("2024-01-01"))
+                .endDate(LocalDate.parse("2025-01-01"))
+                .valid(true)
+                .build();
+
+        MvcResult result = mockMvc.perform(post("/api/categories/discounts")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(objectMapper.writeValueAsString(discountDTO)))
+                .andReturn();
+
+        String content = result.getResponse().getContentAsString();
+        Long id = Long.parseLong(JsonPath.parse(content).read("$.id").toString());
+
+        //delete category by id and check expectations
+        ResultActions response = mockMvc.perform(delete("/api/categories/discounts/{id}", id));
 
         response.andExpect(status().isOk())
                 .andDo(print());

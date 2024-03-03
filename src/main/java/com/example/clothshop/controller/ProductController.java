@@ -123,6 +123,7 @@ public class ProductController {
         return productService.getProductsByCategory(categoryId, personId);
     }
 
+    /*
     @ExceptionHandler
     private ResponseEntity<ProductErrorResponse> handleProductNotFoundException(ProductNotFoundException exception) {
         ProductErrorResponse response = new ProductErrorResponse("Product with this id wasn't found!");
@@ -152,5 +153,6 @@ public class ProductController {
         VendorErrorResponse response = new VendorErrorResponse("Vendor with this id wasn't found!");
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+     */
 
 }

@@ -102,6 +102,7 @@ public class CategoryController {
         return mapStructMapper.categoryToCategoryDTO(categoryService.changeDiscount(categoryId, discountId));
     }
 
+    /*
     @ExceptionHandler
     private ResponseEntity<CategoryErrorResponse> handleCategoryNotFoundException(CategoryNotFoundException exception) {
         CategoryErrorResponse response = new CategoryErrorResponse("Category with this id wasn't found!");
@@ -119,4 +120,8 @@ public class CategoryController {
         DiscountErrorResponse response = new DiscountErrorResponse("Discount with this id wasn't found!");
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
+
+     */
+
+
 }

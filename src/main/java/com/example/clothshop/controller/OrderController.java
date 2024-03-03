@@ -180,6 +180,7 @@ public class OrderController {
         return mapStructMapper.orderToOrderDTO(order);
     }
 
+    /*
     @ExceptionHandler
     private ResponseEntity<OrderErrorResponse> handleOrderNotFoundException(OrderNotFoundException exception) {
         OrderErrorResponse response = new OrderErrorResponse("Order with this id wasn't found!");
@@ -221,4 +222,6 @@ public class OrderController {
         PersonErrorResponse response = new PersonErrorResponse("User is not authorized to perform the requested operation.");
         return new ResponseEntity<>(response, HttpStatus.UNAUTHORIZED);
     }
+    */
+
 }

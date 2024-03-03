@@ -93,10 +93,12 @@ public class AuthenticationController {
         return ResponseEntity.ok(mapStructMapper.personToSignupRequestDTO(personService.save(person)));
     }
 
+    /*
     @ExceptionHandler
     private ResponseEntity<PersonErrorResponse> handlePersonNotCreatedException(PersonNotCreatedException exception) {
         PersonErrorResponse response = new PersonErrorResponse(exception.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
+    */
 
 }

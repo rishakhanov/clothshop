@@ -1,9 +1,12 @@
 package com.example.clothshop.controller;
 
 import com.example.clothshop.dto.CategoryDTO;
+import com.example.clothshop.dto.DiscountDTO;
 import com.example.clothshop.dto.MapStructMapper;
 import com.example.clothshop.entity.Category;
+import com.example.clothshop.entity.Discount;
 import com.example.clothshop.service.CategoryService;
+import com.example.clothshop.service.DiscountService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.hamcrest.CoreMatchers;
 import org.junit.jupiter.api.Test;
@@ -20,6 +23,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.validation.BindingResult;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -38,6 +42,9 @@ public class CategoryControllerTests {
 
     @MockBean
     private CategoryService categoryService;
+
+    @MockBean
+    private DiscountService discountService;
 
     @MockBean
     private MapStructMapper mapStructMapper;
@@ -66,6 +73,30 @@ public class CategoryControllerTests {
         response.andDo(print())
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(jsonPath("$.name", CoreMatchers.is(categoryDTO.getName())));
+    }
+
+    @Test
+    public void givenDiscountDTOObject_whenCreateDiscount_thenReturnSavedDiscount() throws Exception {
+        DiscountDTO discountDTO = DiscountDTO.builder()
+                .name("DiscountTest")
+                .value(0)
+                .startDate(LocalDate.parse("2024-01-01"))
+                .endDate(LocalDate.parse("2025-01-01"))
+                .valid(true)
+                .build();
+
+        BDDMockito.given(mapStructMapper.discountToDiscountDTO(discountService.saveNewDiscount(discountDTO)))
+                .willReturn(discountDTO);
+
+        BDDMockito.willDoNothing().given(discountService).checkForValidationErrors(bindingResult);
+
+        ResultActions response = mockMvc.perform(post("/api/categories/discounts")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(discountDTO)));
+
+        response.andDo(print())
+                .andExpect(MockMvcResultMatchers.status().isCreated())
+                .andExpect(jsonPath("$.name", CoreMatchers.is(discountDTO.getName())));
     }
 
     @Test
@@ -136,6 +167,69 @@ public class CategoryControllerTests {
     }
 
     @Test
+    public void givenListOfDiscounts_whenGetAllDiscounts_thenReturnDiscountsList() throws Exception {
+        List<Discount> discountList = new ArrayList<>();
+        Discount discount1 = Discount.builder()
+                .id(1L)
+                .categories(null)
+                .personDiscounts(null)
+                .name("DiscountTest1")
+                .value(0)
+                .startDate(LocalDate.parse("2024-01-01"))
+                .endDate(LocalDate.parse("2025-01-01"))
+                .valid(true)
+                .build();
+
+        Discount discount2 = Discount.builder()
+                .id(1L)
+                .categories(null)
+                .personDiscounts(null)
+                .name("DiscountTest2")
+                .value(0)
+                .startDate(LocalDate.parse("2024-01-01"))
+                .endDate(LocalDate.parse("2025-01-01"))
+                .valid(true)
+                .build();
+
+        discountList.add(discount1);
+        discountList.add(discount2);
+
+        List<DiscountDTO> discountDTOList = new ArrayList<>();
+        DiscountDTO discountDTO1 = DiscountDTO.builder()
+                .name("DiscountDTOTest1")
+                .value(0)
+                .startDate(LocalDate.parse("2024-01-01"))
+                .endDate(LocalDate.parse("2025-01-01"))
+                .valid(true)
+                .build();
+
+        DiscountDTO discountDTO2 = DiscountDTO.builder()
+                .name("DiscountDTOTest2")
+                .value(0)
+                .startDate(LocalDate.parse("2024-01-01"))
+                .endDate(LocalDate.parse("2025-01-01"))
+                .valid(true)
+                .build();
+
+        discountDTOList.add(discountDTO1);
+        discountDTOList.add(discountDTO2);
+
+        BDDMockito.given(discountService.getDiscounts()).willReturn(discountList);
+
+        BDDMockito.given(mapStructMapper.discountToDiscountDTO(ArgumentMatchers.any(Discount.class)))
+                .willReturn(discountDTO1, discountDTO2);
+
+        ResultActions response = mockMvc.perform(get("/api/categories/discounts"));
+
+        response.andExpect(MockMvcResultMatchers.status().isOk())
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.size()", CoreMatchers.is(discountDTOList.size())));
+
+    }
+
+
+
+    @Test
     public void givenCategoryId_whenGetCategoryById_thenReturnCategoryObject() throws Exception {
         long categoryId = 1L;
         CategoryDTO categoryDTO = CategoryDTO.builder()
@@ -152,6 +246,25 @@ public class CategoryControllerTests {
                 .andExpect(jsonPath("$.name", CoreMatchers.is(categoryDTO.getName())));
     }
 
+    @Test
+    public void givenDiscountId_whenGetDiscountById_thenReturnDiscountObject() throws Exception {
+        long discountId = 1L;
+        DiscountDTO discountDTO = DiscountDTO.builder()
+                .name("DiscountTest")
+                .value(0)
+                .startDate(LocalDate.parse("2024-01-01"))
+                .endDate(LocalDate.parse("2025-01-01"))
+                .valid(true)
+                .build();
+
+        BDDMockito.given(mapStructMapper.discountToDiscountDTO(discountService.getDiscountById(discountId)))
+                .willReturn(discountDTO);
+
+        ResultActions response = mockMvc.perform(get("/api/categories/discounts/{id}", discountId));
+
+        response.andDo(print())
+                .andExpect(jsonPath("$.name", CoreMatchers.is(discountDTO.getName())));
+    }
 
     @Test
     public void givenCategoryId_whenDeleteCategory_thenReturn200() throws Exception {
@@ -163,5 +276,17 @@ public class CategoryControllerTests {
         response.andExpect(status().isOk())
                 .andDo(print());
     }
+
+    @Test
+    public void givenDiscountId_whenDeleteDiscount_thenReturn200() throws Exception {
+        long discountId = 1L;
+        BDDMockito.willDoNothing().given(discountService).deleteDiscount(discountId);
+
+        ResultActions response = mockMvc.perform(delete("/api/categories/discounts/{id}", discountId));
+
+        response.andExpect(status().isOk())
+                .andDo(print());
+    }
+
 
 }
