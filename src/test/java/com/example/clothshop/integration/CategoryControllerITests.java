@@ -16,12 +16,17 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -34,6 +39,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@Testcontainers
+@Sql("/sql/category_init.sql")
 public class CategoryControllerITests {
 
     @Autowired
@@ -47,6 +54,10 @@ public class CategoryControllerITests {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest");
 
     @Test
     public void givenListOfCategories_whenGetAllCategories_thenReturnCategoriesList() throws Exception {
@@ -92,8 +103,6 @@ public class CategoryControllerITests {
                 .andExpect(jsonPath("$.name", CoreMatchers.is(discount.getName())));
     }
 
-
-
     @Test
     public void givenCategoryDTOObject_whenCreateCategory_thenReturnSavedCategory() throws Exception {
         //create category and check expectations
@@ -107,12 +116,6 @@ public class CategoryControllerITests {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(jsonPath("$.name", CoreMatchers.is(categoryDTO.getName())))
                 .andReturn();
-
-        //delete created category
-        String content = result.getResponse().getContentAsString();
-        Long id = Long.parseLong(JsonPath.parse(content).read("$.id").toString());
-        categoryRepository.deleteById(id);
-
     }
 
     @Test
@@ -132,27 +135,12 @@ public class CategoryControllerITests {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(jsonPath("$.name", CoreMatchers.is(discountDTO.getName())))
                 .andReturn();
-
-        //delete created discount
-        String content = result.getResponse().getContentAsString();
-        Long id = Long.parseLong(JsonPath.parse(content).read("$.id").toString());
-        discountRepository.deleteById(id);
     }
 
     @Test
     public void givenUpdateCategory_whenUpdateCategory_thenReturnUpdatedCategoryObject() throws Exception {
-        //create category and get id
-        CategoryDTO categoryDTO = CategoryDTO.builder()
-                .name("categoryTestName")
-                .build();
 
-        MvcResult result = mockMvc.perform(post("/api/categories")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(categoryDTO)))
-                .andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        Long id = Long.parseLong(JsonPath.parse(content).read("$.id").toString());
+        Long id = categoryRepository.count();
 
         //update category and check expectations
         CategoryDTO updatedCategoryDTO = CategoryDTO.builder()
@@ -165,25 +153,12 @@ public class CategoryControllerITests {
 
         response.andDo(print())
                 .andExpect(jsonPath("$.name", CoreMatchers.is(updatedCategoryDTO.getName())));
-
-        //delete created category
-        categoryRepository.deleteById(id);
     }
 
     @Test
     public void givenCategoryId_whenDeleteCategory_thenReturn200() throws Exception {
-        //create category and get id
-        CategoryDTO categoryDTO = CategoryDTO.builder()
-                .name("categoryTestName")
-                .build();
 
-        MvcResult result = mockMvc.perform(post("/api/categories")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(categoryDTO)))
-                .andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        Long id = Long.parseLong(JsonPath.parse(content).read("$.id").toString());
+        Long id = categoryRepository.count();
 
         //delete category by id and check expectations
         ResultActions response = mockMvc.perform(delete("/api/categories/{id}", id));
@@ -194,22 +169,8 @@ public class CategoryControllerITests {
 
     @Test
     public void givenDiscountId_whenDeleteDiscount_thenReturn200() throws Exception {
-        //create discount and get id
-        DiscountDTO discountDTO = DiscountDTO.builder()
-                .name("DiscountTest")
-                .value(0)
-                .startDate(LocalDate.parse("2024-01-01"))
-                .endDate(LocalDate.parse("2025-01-01"))
-                .valid(true)
-                .build();
 
-        MvcResult result = mockMvc.perform(post("/api/categories/discounts")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(discountDTO)))
-                .andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        Long id = Long.parseLong(JsonPath.parse(content).read("$.id").toString());
+        Long id = discountRepository.count();
 
         //delete category by id and check expectations
         ResultActions response = mockMvc.perform(delete("/api/categories/discounts/{id}", id));

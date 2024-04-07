@@ -25,13 +25,18 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
 import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +50,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Testcontainers
+@Sql("/sql/product_init.sql")
 public class ProductControllerITests {
 
     @Autowired
@@ -65,7 +72,9 @@ public class ProductControllerITests {
     @Autowired
     private ObjectMapper objectMapper;
 
-
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest");
 
     @Test
     public void givenListOfProducts_whenGetAllProducts_thenReturnProductsList() throws Exception {
@@ -78,7 +87,6 @@ public class ProductControllerITests {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.size()",
                         CoreMatchers.is(repositorySize)));
     }
-
 
     @Test
     public void givenProductId_whenGetProductById_thenReturnProductObject() throws Exception {
@@ -121,43 +129,15 @@ public class ProductControllerITests {
                 .andExpect(MockMvcResultMatchers.jsonPath("$.quantity", CoreMatchers.is((int)productDTO.getQuantity())))
                 .andReturn();
 
-        //delete created product
-        String content = result.getResponse().getContentAsString();
-        String productName = JsonPath.parse(content).read("$.name");
-        Optional<Product> product = productRepository.findByName(productName);
-        Long id = product.get().getId();
-        productRepository.deleteById(id);
     }
 
     @Test
     public void givenUpdatedProduct_whenUpdateProduct_thenReturnUpdatedProductObject() throws Exception {
-        //create product and get id
+        //get id
         Category category = categoryRepository.findById(1L).get();
         Vendor vendor = vendorRepository.findById(1L).get();
         Image image = imageRepository.findById(1L).get();
-
-        SimpleModule simpleModule = new SimpleModule();
-        simpleModule.addSerializer(ProductDTO.class, new ProductDTOSerializer());
-        objectMapper.registerModule(simpleModule);
-
-        ProductDTO productDTO = ProductDTO.builder()
-                .category(category)
-                .vendor(vendor)
-                .image(image)
-                .name("productTestName")
-                .price(100.00)
-                .quantity(1000L)
-                .build();
-
-        MvcResult result = mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(productDTO)))
-                .andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        String productName = JsonPath.parse(content).read("$.name");
-        Optional<Product> product = productRepository.findByName(productName);
-        Long id = product.get().getId();
+        Long id = productRepository.count();
 
         //update product and check expectations
         ProductDTO updatedProductDTO = ProductDTO.builder()
@@ -177,39 +157,12 @@ public class ProductControllerITests {
                 .andExpect(jsonPath("$.name", CoreMatchers.is(updatedProductDTO.getName())))
                 .andExpect(jsonPath("$.price", CoreMatchers.is(updatedProductDTO.getPrice())));
 
-        //delete created product
-        productRepository.deleteById(id);
     }
 
     @Test
     public void givenProductId_whenDeleteProduct_thenReturn200() throws Exception {
-        //create product and get id
-        Category category = categoryRepository.findById(1L).get();
-        Vendor vendor = vendorRepository.findById(1L).get();
-        Image image = imageRepository.findById(1L).get();
 
-        SimpleModule simpleModule = new SimpleModule();
-        simpleModule.addSerializer(ProductDTO.class, new ProductDTOSerializer());
-        objectMapper.registerModule(simpleModule);
-
-        ProductDTO productDTO = ProductDTO.builder()
-                .category(category)
-                .vendor(vendor)
-                .image(image)
-                .name("productTestName")
-                .price(100.00)
-                .quantity(1000L)
-                .build();
-
-        MvcResult result = mockMvc.perform(post("/api/products")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(productDTO)))
-                .andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        String productName = JsonPath.parse(content).read("$.name");
-        Optional<Product> product = productRepository.findByName(productName);
-        Long id = product.get().getId();
+        Long id = productRepository.count();
 
         //delete product by id and check expectations
         ResultActions response = mockMvc.perform(delete("/api/products/{id}", id));
@@ -217,6 +170,5 @@ public class ProductControllerITests {
         response.andExpect(status().isOk())
                 .andDo(print());
     }
-
 
 }

@@ -16,13 +16,18 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -36,6 +41,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@Testcontainers
+@Sql("/sql/order_init.sql")
 public class OrderControllerITests {
 
     @Autowired
@@ -46,6 +53,10 @@ public class OrderControllerITests {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest");
 
     @Test
     @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})
@@ -75,7 +86,7 @@ public class OrderControllerITests {
     @Test
     @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})
     public void givenOrderDTOObject_whenCreateOrder_thenReturnSavedOrder() throws Exception {
-        long userId = 1L;
+        long userId = 2L;
 
         MvcResult result = mockMvc.perform(post("/api/orders/users/{id}", userId)
                 .contentType(MediaType.APPLICATION_JSON))
@@ -83,16 +94,12 @@ public class OrderControllerITests {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.status", CoreMatchers.is(OrdersStatus.NEW.toString())))
                 .andReturn();
-
-        String content = result.getResponse().getContentAsString();
-        Long id = Long.parseLong(JsonPath.parse(content).read("$.id").toString());
-        orderRepository.deleteById(id);
     }
 
     @Test
     @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})
     public void givenOrderId_whenDeleteOrder_thenReturn200() throws Exception {
-        long userId = 1L;
+        long userId = 2L;
         MvcResult result = mockMvc.perform(post("/api/orders/users/{id}", userId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andReturn();

@@ -14,13 +14,19 @@ import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testcontainers.service.connection.ServiceConnection;
 import org.springframework.http.MediaType;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.jdbc.Sql;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.testcontainers.containers.PostgreSQLContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,6 +39,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureMockMvc
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
+@Testcontainers
+@Sql("/sql/person_init.sql")
 public class PersonControllerITests {
 
     @Autowired
@@ -50,6 +59,10 @@ public class PersonControllerITests {
     @Autowired
     private PasswordEncoder encoder;
 
+    @Container
+    @ServiceConnection
+    static PostgreSQLContainer<?> postgreSQLContainer = new PostgreSQLContainer<>("postgres:latest");
+
     @Test
     @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})
     public void givenListOfPersons_whenGetAllPersons_thenReturnPersonsList() throws Exception {
@@ -66,7 +79,7 @@ public class PersonControllerITests {
     @Test
     @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})
     public void givenPersonId_whenGetPersonById_thenReturnPersonObject() throws Exception {
-        long personId = 1L;
+        long personId = personRepository.count();
         Person person = personRepository.findById(personId).get();
 
         ResultActions response = mockMvc.perform(get("/api/users/id/{id}", personId));
@@ -78,23 +91,8 @@ public class PersonControllerITests {
     @Test
     @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})
     public void givenUpdatedPerson_whenUpdatePerson_thenReturnUpdatedPerson() throws Exception {
-        //create Person
-        List<Roles> roles = new ArrayList<>();
-        Roles role = rolesService.findByName("ROLE_USER");
-        roles.add(role);
 
-        Person person = Person.builder()
-                .orders(null)
-                .rolesList(roles)
-                .username("UsernameTest")
-                .firstname("FirstNameTest")
-                .lastname("LastNameTest")
-                .email("email@gmail.com")
-                .password(encoder.encode("PasswordTest"))
-                .phone("1-22-333")
-                .build();
-
-        long personId = personRepository.save(person).getId();
+        long personId = personRepository.count();
 
         //update person and check expectations
         PersonUpdateDTO updatedPersonDTO = PersonUpdateDTO.builder()
@@ -111,63 +109,28 @@ public class PersonControllerITests {
 
         response.andDo(print())
                 .andExpect(jsonPath("$.firstname", CoreMatchers.is("FirstNameTestUpdate")));
-
-        //delete created person
-        personRepository.deleteById(personId);
-
     }
 
     @Test
     @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})
     public void givenPersonUsername_whenGetPersonByUsername_thenReturnPersonObject() throws Exception {
-        //create Person
-        List<Roles> roles = new ArrayList<>();
-        Roles role = rolesService.findByName("ROLE_USER");
-        roles.add(role);
 
-        Person person = Person.builder()
-                .orders(null)
-                .rolesList(roles)
-                .username("UsernameTest")
-                .firstname("FirstNameTest")
-                .lastname("LastNameTest")
-                .email("email@gmail.com")
-                .password(encoder.encode("PasswordTest"))
-                .phone("1-22-333")
-                .build();
-
-        long personId = personRepository.save(person).getId();
+        long personId = 1L;
+        Person person = personRepository.findById(personId).get();
 
         //find person and check expectations
-        ResultActions response = mockMvc.perform(get("/api/users/{username}", "UsernameTest"));
+        ResultActions response = mockMvc.perform(get("/api/users/{username}", person.getUsername()));
 
         response.andDo(print())
                 .andExpect(jsonPath("$.username", CoreMatchers.is(person.getUsername())));
 
-        //delete created person
-        personRepository.deleteById(personId);
     }
 
     @Test
     @WithMockUser(username = "admin", password = "admin", roles = {"ADMIN"})
     public void givenPersonId_whenDeletePerson_thenReturn200() throws Exception {
-        //create Person
-        List<Roles> roles = new ArrayList<>();
-        Roles role = rolesService.findByName("ROLE_USER");
-        roles.add(role);
 
-        Person person = Person.builder()
-                .orders(null)
-                .rolesList(roles)
-                .username("UsernameTest")
-                .firstname("FirstNameTest")
-                .lastname("LastNameTest")
-                .email("email@gmail.com")
-                .password(encoder.encode("PasswordTest"))
-                .phone("1-22-333")
-                .build();
-
-        long personId = personRepository.save(person).getId();
+        long personId = personRepository.count();
 
         //delete person by id and check expectations
         ResultActions response = mockMvc.perform(delete("/api/users/{id}", personId));
